@@ -58,7 +58,6 @@ class CRYHomeVM @Inject constructor(
      *
      */
     fun getBooks() {
-        println("getBooks")
         val result = bookUseCase.getAvailableBooksRx()
         _result.postValue(result)
     }
@@ -92,6 +91,8 @@ class CRYHomeVM @Inject constructor(
                     _chipsTitles.value = bookUseCase.createListBookTitles(_books.value!!)
                     _booksMap.value = bookUseCase.createUniqueMap(_books.value!!)
                     _equalBooks.value = _booksMap.value?.get(_chipsTitles.value?.firstOrNull()?.singleBook)
+                } else {
+                    getBooks()
                 }
             }
         }

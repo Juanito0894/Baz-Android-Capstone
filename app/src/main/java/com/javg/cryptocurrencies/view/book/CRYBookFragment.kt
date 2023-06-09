@@ -66,7 +66,6 @@ class CRYBookFragment : Fragment() {
         loadAdapter()
         loadViewPagerChips()
         swipeRefresh()
-        bookHomeVM.getBooks()
         bookHomeVM.updateTime.observe(viewLifecycleOwner, observerUpdateTime)
         bookHomeVM.chipsTitles.observe(viewLifecycleOwner, observerBooksChips)
         bookHomeVM.equalBooks.observe(viewLifecycleOwner, observerEqualsBooks)

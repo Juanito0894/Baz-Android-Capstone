@@ -58,6 +58,7 @@ class CRYHomeVM @Inject constructor(
      *
      */
     fun getBooks() {
+        println("getBooks")
         val result = bookUseCase.getAvailableBooksRx()
         _result.postValue(result)
     }

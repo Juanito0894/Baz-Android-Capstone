@@ -11,7 +11,7 @@
     <string name="cry_price">Precio</string>
     <string name="cry_amount">Monto:</string>
     <string name="cry_txt_ask">Demanda</string>
-    <string name="cry_txt_bids">Ofertas</string>
+    <string name="cry_txt_bids">Oferta</string>
     <string name="cry_price_order">$%1$s</string>
     <string name="cry_update_day">Ultima actualización\n %1$s</string>
     <string name="cry_success_network">Hay conexión a internet</string>
@@ -20,4 +20,9 @@
     <string name="cry_detail_book">Detalle de la criptomoneda</string>
     <string name="cry_no_information">Por el momento no hay información</string>
     <string name="cry_txt_last_price_fake">$410060.00</string>
+    
+    <!--NewCopies-->
+    <string name="cry_coins_list">Lista de monedas</string>
+    <string name="cry_search_book">Buscar moneda</string>
+    <string name="cry_have_conversions">Cuenta con las siguientes\nconversiones.</string>
 </resources>

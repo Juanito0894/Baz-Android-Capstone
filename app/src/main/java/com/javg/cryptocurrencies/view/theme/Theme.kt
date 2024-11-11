@@ -40,7 +40,7 @@ fun CryptocurrenciesTheme(
 
     MaterialTheme(
         colors = colors,
-        typography = Typography,
+        typography = myTypography,
         shapes = Shapes,
         content = content
     )

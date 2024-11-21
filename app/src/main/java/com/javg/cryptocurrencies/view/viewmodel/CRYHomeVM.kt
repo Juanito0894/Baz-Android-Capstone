@@ -2,44 +2,31 @@ package com.javg.cryptocurrencies.view.viewmodel
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.javg.cryptocurrencies.R
 import com.javg.cryptocurrencies.data.domain.CRYGetBookUseCase
 import com.javg.cryptocurrencies.data.enums.CRYEnumsTypeFlow
-import com.javg.cryptocurrencies.data.model.CRYBook
 import com.javg.cryptocurrencies.data.model.CRYBookV2
 import com.javg.cryptocurrencies.data.model.CRYGeneralBook
-import com.javg.cryptocurrencies.utils.CRYUtils
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-
 /**
  * @author Juan Vera Gomez
- * Date modified 22/02/2023
+ * Date modified 21/11/2024
  *
  * Contains the necessary functions to obtain the information
  * from the cryptocurrency books
  *
- * @since 1.3
+ * @since 2.0
  */
 @HiltViewModel
 class CRYHomeVM @Inject constructor(
     application: Application,
     private val cryGetBookUseCase: CRYGetBookUseCase,
 ) : AndroidViewModel(application) {
-
-    private var _booksMap = MutableLiveData<HashMap<String, List<CRYBook>>>()
-
-    private var _updateTime = MutableLiveData<String>()
-    private var _chipsTitles = MutableLiveData<List<CRYBook>>()
-    private var _equalBooks = MutableLiveData<List<CRYBook>>()
-    private var _result = MutableLiveData<Boolean>()
     private var _bookInitials = MutableStateFlow("")
     val bookInitials: StateFlow<String> get() = _bookInitials
 
@@ -49,20 +36,7 @@ class CRYHomeVM @Inject constructor(
     private val _stateGeneralBooks = MutableStateFlow(emptyList<CRYGeneralBook>())
     val stateGeneralBooks: StateFlow<List<CRYGeneralBook>> get() = _stateGeneralBooks
 
-    val updateTime: LiveData<String>
-        get() = _updateTime
-
-    val chipsTitles: LiveData<List<CRYBook>>
-        get() = _chipsTitles
-
-    val equalBooks: LiveData<List<CRYBook>>
-        get() = _equalBooks
-
-    val result: LiveData<Boolean>
-        get() = _result
-
     init {
-        _updateTime.value = getTimeUpdate()
         queryBookFlow()
     }
 
@@ -75,22 +49,6 @@ class CRYHomeVM @Inject constructor(
         /*val result = bookUseCase.getAvailableBooksRx()
         _result.postValue(result)*/
     }
-
-    /**
-     * Updates the view list with another list according to the
-     * position selected by the user
-     *
-     * @param position is the position of the user selection
-     */
-    fun updateListDifferentBook(position: Int) {
-        val book = _chipsTitles.value?.get(position)
-        _equalBooks.value = _booksMap.value?.get(book?.singleBook)
-    }
-
-    /**
-     * Returns a composite legend with the updated time of the remote service query
-     */
-    private fun getTimeUpdate(): String = String.format(getApplication<Application>().applicationContext.getString(R.string.cry_update_day), CRYUtils.getSaveTime(getApplication<Application>().applicationContext))
 
     /**
      * It is in charge of observing the changes of the list of books

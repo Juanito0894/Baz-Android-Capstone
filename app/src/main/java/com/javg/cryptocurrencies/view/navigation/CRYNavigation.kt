@@ -10,7 +10,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.javg.cryptocurrencies.data.enums.CRYEnumsTypeFlow
-import com.javg.cryptocurrencies.view.book.CRYDashboardBooksScreen
+import com.javg.cryptocurrencies.view.dashboard.CRYDashboardBooksScreen
 import com.javg.cryptocurrencies.view.collections_book.CRYCollectionsBookScreen
 import com.javg.cryptocurrencies.view.detail.CRYDetailBookScreen
 import com.javg.cryptocurrencies.view.viewmodel.CRYHomeVM

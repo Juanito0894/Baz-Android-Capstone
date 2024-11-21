@@ -4,35 +4,11 @@ import com.google.common.truth.Truth.assertThat
 import org.junit.Test
 
 class CRYBookTest{
-    private val target = CRYBook(
-        book = "btc_mxn",
-        imageUrl = "https://cryptoicons.org/api/icon/dai/200",
-        bookDestination = "https://cryptoicons.org/api/icon/dai/200")
     private val target2 = CRYDetailBook()
     private val target3 = CRYAskOrBids(
         book = "btc_mxn",
         price = "123",
         amount = "123456")
-
-    @Test
-    fun `test cryBook with custom properties`(){
-        assertThat(target.book).isNotEmpty()
-        assertThat(target.imageUrl).isNotEmpty()
-        assertThat(target.bookDestination).isNotEmpty()
-    }
-
-    @Test
-    fun `test cryBook with empty properties`(){
-        target.apply {
-            book     = ""
-            imageUrl = ""
-            bookDestination = ""
-        }
-        assertThat(target.book).isEmpty()
-        assertThat(target.imageUrl).isEmpty()
-        assertThat(target.bookDestination).isEmpty()
-    }
-
     @Test
     fun `test cryDetailBook default properties`(){
         assertThat(target2.high).isEmpty()

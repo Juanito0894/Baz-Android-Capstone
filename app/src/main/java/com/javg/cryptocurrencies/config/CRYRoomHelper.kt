@@ -33,14 +33,6 @@ object CRYRoomHelper {
     }
 
     /**
-     * Provides an instance of the interface that controls the books
-     * table with their respective queries
-     */
-    @Singleton
-    @Provides
-    fun provideBookDao(db: CRYAppDatabase) = db.bookDao()
-
-    /**
      * Provides an instance of the interface that controls the detail
      * table of a specific book with its respective queries.
      */

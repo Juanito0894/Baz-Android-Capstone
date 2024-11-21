@@ -1,13 +1,5 @@
 package com.javg.cryptocurrencies.data.model
 
-data class CRYBook(
-    var book: String,
-    var imageUrl: String = "",
-    var bookDestination: String = "",
-    var singleBook: String = "",
-    var imageId: Int = 0
-)
-
 data class CRYDetailBook(
     var high: String = "",
     var last: String = "",

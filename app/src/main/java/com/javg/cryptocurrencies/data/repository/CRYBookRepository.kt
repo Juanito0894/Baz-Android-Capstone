@@ -49,4 +49,8 @@ class CRYBookRepository @Inject constructor(
         // return if (response.success) { response.payload!! } else emptyList()
         return responseDummy.payload ?: emptyList()
     }
+
+    suspend fun findBookById(acronym: String): CRYGeneralBook? {
+        return generalBookDao.findById(acronym)?.toDomain()
+    }
 }

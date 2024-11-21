@@ -1,6 +1,5 @@
 package com.javg.cryptocurrencies.view.collections_book
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -13,17 +12,16 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.Icon
 import androidx.compose.material.Text
-import androidx.compose.material.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.toLowerCase
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.javg.cryptocurrencies.R
 import com.javg.cryptocurrencies.data.enums.CRYEnumsTopBar
 import com.javg.cryptocurrencies.data.model.CRYCardItemBuilder
@@ -34,15 +32,15 @@ import com.javg.cryptocurrencies.view.components.CRYTopHeaderBarUI
 import com.javg.cryptocurrencies.view.theme.Neutral
 import com.javg.cryptocurrencies.view.theme.Primary500
 import com.javg.cryptocurrencies.view.theme.myTypography
-import com.javg.cryptocurrencies.view.viewmodel.CRYHomeVM
+import com.javg.cryptocurrencies.view.viewmodel.CRYCollectionsBooksVM
 
 @Composable
-fun CRYCollectionsBookScreen(homeVM: CRYHomeVM, onClickBack: () -> Unit){
-    val bookCollections by homeVM.bookCollections.collectAsState()
-    
+fun CRYCollectionsBookScreen(acronym: String, onClickBack: () -> Unit){
+    val collectionBooksVM: CRYCollectionsBooksVM = hiltViewModel()
+    val book by collectionBooksVM.generalBook.observeAsState()
+
     LaunchedEffect(key1 = true) {
-        Log.e("CRYCollectionsBookScreen","bookInitial is -> ${homeVM.bookInitials.value}")
-        homeVM.queryCollections()
+        collectionBooksVM.findGeneralBook(acronym)
     }
     Column(
         Modifier
@@ -51,7 +49,7 @@ fun CRYCollectionsBookScreen(homeVM: CRYHomeVM, onClickBack: () -> Unit){
 
         val topBarBuilder = CRYTopHeaderBuilder()
             .withTypeHeader(CRYEnumsTopBar.NORMAL)
-            .withTitle("Ethereum")
+            .withTitle(book?.fullName.orEmpty())
             .withOnClick { onClickBack() }
 
         CRYTopHeaderBarUI(topBarBuilder)
@@ -71,20 +69,17 @@ fun CRYCollectionsBookScreen(homeVM: CRYHomeVM, onClickBack: () -> Unit){
                 color = Neutral)
         }
         CRYContentBooksUI {
-            if (bookCollections.isNotEmpty()) {
-                LazyColumn {
-                    items(bookCollections){
-                        CRYCardBookUI(CRYCardItemBuilder()
-                            .withTitle(it.acronym.toUpperCase())
-                            .withTextMoney(it.maximumAmount)
-                            .withTextSubtitleMoney(it.rate)
-                            .withIconId(it.imageId))
+            book?.conversions?.let { conversions ->
+                if (conversions.isNotEmpty()) {
+                    LazyColumn {
+                        items(conversions){
+                            CRYCardBookUI(CRYCardItemBuilder()
+                                .withTitle(it.acronym.toUpperCase())
+                                .withTextMoney(it.maximumAmount)
+                                .withTextSubtitleMoney(it.rate)
+                                .withIconId(it.imageId))
+                        }
                     }
-                }
-            } else {
-                Text(text = "No hay datos")
-                TextButton(onClick = { /*TODO*/ }) {
-                    
                 }
             }
         }

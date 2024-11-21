@@ -1,8 +1,6 @@
 package com.javg.cryptocurrencies.view.navigation
 
-import android.util.Log
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -33,10 +31,7 @@ fun CRYNavigation(){
             CRYScreen.CollectionBooks.baseRoute+"/{acronym}",
             arguments = listOf(navArgument("acronym"){type = NavType.StringType})){ backStackEntry ->
             val acronym = requireNotNull(backStackEntry.arguments?.getString("acronym"))
-            LaunchedEffect(key1 = true) {
-                Log.e("CollectionBooks", "-------> book is $acronym")
-            }
-            CRYCollectionsBookScreen(homeVM){
+            CRYCollectionsBookScreen(acronym){
                 navController.popBackStack()
             }
         }

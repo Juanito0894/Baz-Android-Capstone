@@ -25,3 +25,16 @@ data class CRYDetailBookEntity(
     @ColumnInfo("askList") val askList: String,
     @ColumnInfo("bidsList") val bidsList: String,
 )
+
+@Entity(tableName = CRYAppDatabase.GENERAL_BOOKS_TABLE)
+data class CRYGeneralBooksEntity(
+    @PrimaryKey
+    @ColumnInfo("acronym")
+    val acronym: String,
+    @ColumnInfo("fullName")
+    val fullName: String,
+    @ColumnInfo("imageId")
+    val imageId: Int,
+    @ColumnInfo("collectionBooks")
+    val collectionBooks: String
+)

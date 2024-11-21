@@ -6,12 +6,18 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.javg.cryptocurrencies.R
-import com.javg.cryptocurrencies.data.domain.CRYBookUseCase
+import com.javg.cryptocurrencies.data.domain.CRYGetBookUseCase
+import com.javg.cryptocurrencies.data.enums.CRYEnumsTypeFlow
 import com.javg.cryptocurrencies.data.model.CRYBook
+import com.javg.cryptocurrencies.data.model.CRYBookV2
+import com.javg.cryptocurrencies.data.model.CRYGeneralBook
 import com.javg.cryptocurrencies.utils.CRYUtils
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+
 
 /**
  * @author Juan Vera Gomez
@@ -25,15 +31,23 @@ import javax.inject.Inject
 @HiltViewModel
 class CRYHomeVM @Inject constructor(
     application: Application,
-    private val bookUseCase: CRYBookUseCase,
+    private val cryGetBookUseCase: CRYGetBookUseCase,
 ) : AndroidViewModel(application) {
 
     private var _booksMap = MutableLiveData<HashMap<String, List<CRYBook>>>()
-    private var _books = MutableLiveData<List<CRYBook>>()
+
     private var _updateTime = MutableLiveData<String>()
     private var _chipsTitles = MutableLiveData<List<CRYBook>>()
     private var _equalBooks = MutableLiveData<List<CRYBook>>()
     private var _result = MutableLiveData<Boolean>()
+    private var _bookInitials = MutableStateFlow("")
+    val bookInitials: StateFlow<String> get() = _bookInitials
+
+    private val _bookCollections = MutableStateFlow(emptyList<CRYBookV2>())
+    val bookCollections: StateFlow<List<CRYBookV2>> get() = _bookCollections
+
+    private val _stateGeneralBooks = MutableStateFlow(emptyList<CRYGeneralBook>())
+    val stateGeneralBooks: StateFlow<List<CRYGeneralBook>> get() = _stateGeneralBooks
 
     val updateTime: LiveData<String>
         get() = _updateTime
@@ -58,8 +72,8 @@ class CRYHomeVM @Inject constructor(
      *
      */
     fun getBooks() {
-        val result = bookUseCase.getAvailableBooksRx()
-        _result.postValue(result)
+        /*val result = bookUseCase.getAvailableBooksRx()
+        _result.postValue(result)*/
     }
 
     /**
@@ -85,16 +99,20 @@ class CRYHomeVM @Inject constructor(
      */
     private fun queryBookFlow() {
         viewModelScope.launch {
-            bookUseCase.queryBooks().collect {
-                if (it.isNotEmpty()) {
-                    _books.value = bookUseCase.transformBooks(it)
-                    _chipsTitles.value = bookUseCase.createListBookTitles(_books.value!!)
-                    _booksMap.value = bookUseCase.createUniqueMap(_books.value!!)
-                    _equalBooks.value = _booksMap.value?.get(_chipsTitles.value?.firstOrNull()?.singleBook)
-                } else {
-                    getBooks()
-                }
+            cryGetBookUseCase().collect{
+                _stateGeneralBooks.value = it
             }
         }
+    }
+
+    fun getTypeView(collections: List<CRYBookV2>) = if (collections.size > 1) CRYEnumsTypeFlow.COLLECTIONS else CRYEnumsTypeFlow.SINGLE
+
+    fun setBookInitials(bookInitials: String){
+        _bookInitials.value = bookInitials
+    }
+
+    fun queryCollections(){
+        val bookSelected = stateGeneralBooks.value.find { it.acronym == bookInitials.value }
+        _bookCollections.value = bookSelected?.conversions ?: emptyList()
     }
 }

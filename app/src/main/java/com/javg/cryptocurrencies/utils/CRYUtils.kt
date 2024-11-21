@@ -9,9 +9,11 @@ import android.net.NetworkCapabilities
 import android.os.Build
 import android.util.Log
 import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import com.javg.cryptocurrencies.data.model.CRYAskOrBids
 import java.text.SimpleDateFormat
 import java.util.*
+
 
 object CRYUtils {
 
@@ -114,4 +116,13 @@ object CRYUtils {
      * Converts a string to a list of type CRYAskOrBids
      */
     fun convertersJsonToList(askOrBids: String) = Gson().fromJson(askOrBids, Array<CRYAskOrBids>::class.java).toList()
+
+    fun listToJson(list: List<Any>): String = Gson().toJson(list)
+
+    fun <T> jsonStringToList(s: String?, clazz: Class<Array<T>>?): List<T> = Gson().fromJson(s, clazz).toList()
+
+    inline fun <reified T> jsonToList(jsonString: String): T{
+        val typeToken = object : TypeToken<T>(){}.type
+        return Gson().fromJson(jsonString, typeToken)
+    }
 }

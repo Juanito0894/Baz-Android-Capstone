@@ -18,7 +18,7 @@ interface CRYApi {
     }
 
     @GET(END_POINT_AVAILABLE_BOOKS)
-    suspend fun getListAvailableBooks(): CRYBaseResponse<List<CRYBookResponse>>
+    suspend fun getAvailableBooks(): CRYBaseResponse<List<CRYBookResponse>>
 
     @GET(END_POINT_AVAILABLE_BOOKS)
     fun getListAvailableBooksRX(): Observable<CRYBaseResponse<List<CRYBookResponse>>>

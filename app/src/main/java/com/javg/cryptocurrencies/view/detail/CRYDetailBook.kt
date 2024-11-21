@@ -24,6 +24,7 @@ import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Icon
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -39,7 +40,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.javg.cryptocurrencies.R
-import com.javg.cryptocurrencies.data.enum.CRYEnumsTopBar
+import com.javg.cryptocurrencies.data.enums.CRYEnumsTopBar
 import com.javg.cryptocurrencies.data.model.CRYTopHeaderBuilder
 import com.javg.cryptocurrencies.utils.formatMoney
 import com.javg.cryptocurrencies.view.components.CRYContentBooksUI
@@ -50,10 +51,13 @@ import com.javg.cryptocurrencies.view.theme.Primary500
 import com.javg.cryptocurrencies.view.theme.Text1
 import com.javg.cryptocurrencies.view.theme.myTypography
 import com.javg.cryptocurrencies.view.theme.robotoSlabFamily
+import com.javg.cryptocurrencies.view.viewmodel.CRYHomeVM
 
-@Preview
 @Composable
 fun CRYDetailBookScreen() {
+    LaunchedEffect(key1 = true) {
+        Log.e("CRYDetailBookScreen","-------llega al composeable")
+    }
     val currentContext = LocalContext.current
     val topBarBuilder = CRYTopHeaderBuilder()
         .withTitle("Bitcoin")
@@ -107,7 +111,7 @@ fun CRYDetailBookScreen() {
             horizontalAlignment = Alignment.CenterHorizontally) {
             Spacer(Modifier.height(8.dp))
             Text(
-                text = currentContext.getString(R.string.cry_last_price),
+                text = stringResource(R.string.cry_last_price),
                 fontFamily = robotoSlabFamily,
                 fontWeight = FontWeight.SemiBold,
                 fontSize = 22.sp,

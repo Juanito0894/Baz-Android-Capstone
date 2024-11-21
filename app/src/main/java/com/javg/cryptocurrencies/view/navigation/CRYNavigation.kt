@@ -1,31 +1,54 @@
 package com.javg.cryptocurrencies.view.navigation
 
+import android.util.Log
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
+import com.javg.cryptocurrencies.data.enums.CRYEnumsTypeFlow
 import com.javg.cryptocurrencies.view.book.CRYDashboardBooksScreen
 import com.javg.cryptocurrencies.view.collections_book.CRYCollectionsBookScreen
 import com.javg.cryptocurrencies.view.detail.CRYDetailBookScreen
+import com.javg.cryptocurrencies.view.viewmodel.CRYHomeVM
 
 @Composable
 fun CRYNavigation(){
     val navController = rememberNavController()
-    
-    NavHost(navController = navController, startDestination = CRYNavItem.DashboardNavItem.route) {
-        composable(CRYNavItem.DashboardNavItem.baseRoute) {
-            CRYDashboardBooksScreen{
-                // navController.navigate(CRYNavItem.CollectionCoinsNavItem.baseRoute)
-                navController.navigate(CRYNavItem.DetailBook.baseRoute)
+    val homeVM: CRYHomeVM = hiltViewModel()
+
+    NavHost(navController = navController, startDestination = CRYScreen.Dashboard.baseRoute) {
+        composable(CRYScreen.Dashboard.baseRoute) {
+            CRYDashboardBooksScreen(homeVM){typeFlow, acronym ->
+                when(typeFlow) {
+                    CRYEnumsTypeFlow.COLLECTIONS -> navController.navigate(CRYScreen.CollectionBooks.baseRoute+"/${acronym}")
+                    CRYEnumsTypeFlow.SINGLE -> navController.navigate(CRYScreen.DetailBook.baseRoute)
+                }
             }
         }
-        composable(CRYNavItem.CollectionCoinsNavItem.baseRoute){
-            CRYCollectionsBookScreen{
+        composable(
+            CRYScreen.CollectionBooks.baseRoute+"/{acronym}",
+            arguments = listOf(navArgument("acronym"){type = NavType.StringType})){ backStackEntry ->
+            val acronym = requireNotNull(backStackEntry.arguments?.getString("acronym"))
+            LaunchedEffect(key1 = true) {
+                Log.e("CollectionBooks", "-------> book is $acronym")
+            }
+            CRYCollectionsBookScreen(homeVM){
                 navController.popBackStack()
             }
         }
-        composable(CRYNavItem.DetailBook.baseRoute){
+        composable(CRYScreen.DetailBook.baseRoute){
             CRYDetailBookScreen()
         }
     }
 }
+
+sealed class CRYScreen(internal val baseRoute: String){
+    object Dashboard: CRYScreen("Dashboard")
+    object CollectionBooks: CRYScreen("CollectionsBooks")
+    object DetailBook: CRYScreen("DetailBook")
+}
+

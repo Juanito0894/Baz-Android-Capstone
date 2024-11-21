@@ -21,8 +21,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.javg.cryptocurrencies.view.navigation.CRYNavigation
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.delay
 
+@AndroidEntryPoint
 class MainActivityCompose : ComponentActivity() {
 
     @OptIn(ExperimentalMaterialApi::class)

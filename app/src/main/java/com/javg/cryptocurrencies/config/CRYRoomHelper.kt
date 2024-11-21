@@ -47,4 +47,8 @@ object CRYRoomHelper {
     @Singleton
     @Provides
     fun provideTickerDao(db: CRYAppDatabase) = db.tickerDao()
+
+    @Singleton
+    @Provides
+    fun provideGeneralBooksDao(db: CRYAppDatabase) = db.generalBooks()
 }

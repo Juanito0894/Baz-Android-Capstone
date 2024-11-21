@@ -12,6 +12,8 @@ import androidx.compose.ui.unit.sp
  */
 fun String.separateStringCoins() = this.split("_")[0]
 
+fun String.getFirstCoinsText() = this.split("_").first()
+
 /**
  * function that extends a string to get the
  * second element separated by the '_' symbol

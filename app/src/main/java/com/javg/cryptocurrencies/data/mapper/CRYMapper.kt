@@ -2,9 +2,12 @@ package com.javg.cryptocurrencies.data.mapper
 
 import com.javg.cryptocurrencies.data.db.entity.CRYBookEntity
 import com.javg.cryptocurrencies.data.db.entity.CRYDetailBookEntity
+import com.javg.cryptocurrencies.data.db.entity.CRYGeneralBooksEntity
 import com.javg.cryptocurrencies.data.model.CRYBook
 import com.javg.cryptocurrencies.data.model.CRYBookResponse
+import com.javg.cryptocurrencies.data.model.CRYBookV2
 import com.javg.cryptocurrencies.data.model.CRYDetailBook
+import com.javg.cryptocurrencies.data.model.CRYGeneralBook
 import com.javg.cryptocurrencies.data.model.CRYTicker
 import com.javg.cryptocurrencies.utils.CRYUtils
 
@@ -71,4 +74,20 @@ fun CRYDetailBookEntity.toDomainAll(): CRYDetailBook {
         askList = CRYUtils.convertersJsonToList(this.askList),
         bidsList = CRYUtils.convertersJsonToList(this.bidsList),
     )
+}
+
+fun CRYGeneralBook.toEntity(): CRYGeneralBooksEntity {
+    return CRYGeneralBooksEntity(
+        acronym = this.acronym,
+        fullName = this.fullName,
+        imageId = this.logoId,
+        collectionBooks = CRYUtils.listToJson(this.conversions))
+}
+
+fun CRYGeneralBooksEntity.toDomain(): CRYGeneralBook{
+    return CRYGeneralBook(
+        fullName = this.fullName,
+        acronym = this.acronym,
+        logoId = this.imageId,
+        conversions = CRYUtils.jsonToList<List<CRYBookV2>>(this.collectionBooks))
 }

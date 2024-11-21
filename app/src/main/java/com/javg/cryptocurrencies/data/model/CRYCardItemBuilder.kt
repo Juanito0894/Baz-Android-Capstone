@@ -8,6 +8,7 @@ class CRYCardItemBuilder: CRYCardItemBI {
     private var textMoney = ""
     private var textSubtitleMoney = ""
     private var callBack: (() -> Unit )? = null
+    private var haveCollections = false
 
     override fun withTitle(title: String): CRYCardItemBuilder {
         this.title = title
@@ -44,6 +45,11 @@ class CRYCardItemBuilder: CRYCardItemBI {
         return this
     }
 
+    override fun withHaveCollections(haveCollections: Boolean): CRYCardItemBuilder {
+        this.haveCollections = haveCollections
+        return this
+    }
+
     override fun getTitle() = title
 
     override fun getSubtitle() = subtitle
@@ -57,5 +63,7 @@ class CRYCardItemBuilder: CRYCardItemBI {
     override fun getTextSubtitleMoney() = textSubtitleMoney
 
     override fun getOnClick() = callBack!!
+
+    override fun getHaveCollections() = haveCollections
 
 }

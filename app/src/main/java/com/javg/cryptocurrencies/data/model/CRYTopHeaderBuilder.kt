@@ -1,6 +1,6 @@
 package com.javg.cryptocurrencies.data.model
 
-import com.javg.cryptocurrencies.data.enum.CRYEnumsTopBar
+import com.javg.cryptocurrencies.data.enums.CRYEnumsTopBar
 
 class CRYTopHeaderBuilder: CRYTopHeaderBI {
     private var title = "Title"

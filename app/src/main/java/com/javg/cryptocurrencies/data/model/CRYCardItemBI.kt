@@ -8,6 +8,7 @@ interface CRYCardItemBI {
     fun withTextMoney(textMoney: String): CRYCardItemBuilder
     fun withTextSubtitleMoney(textMoney: String): CRYCardItemBuilder
     fun withOnClick(action: () -> Unit): CRYCardItemBuilder
+    fun withHaveCollections(haveCollections: Boolean): CRYCardItemBuilder
 
     fun getTitle(): String
     fun getSubtitle(): String
@@ -16,4 +17,5 @@ interface CRYCardItemBI {
     fun getTextMoney(): String
     fun getTextSubtitleMoney(): String
     fun getOnClick(): () -> Unit
+    fun getHaveCollections(): Boolean
 }

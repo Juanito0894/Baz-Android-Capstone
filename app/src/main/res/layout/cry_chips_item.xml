@@ -26,7 +26,7 @@
             android:paddingTop="@dimen/dimens_1_dp"
             android:paddingEnd="@dimen/dimens_2_dp"
             android:background="@drawable/background_circle"
-            android:src="@drawable/ic_bitcoin"
+            android:src="@drawable/ic_btc"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"

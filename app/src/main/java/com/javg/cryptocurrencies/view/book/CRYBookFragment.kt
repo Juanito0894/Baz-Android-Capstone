@@ -81,7 +81,7 @@ class CRYBookFragment : Fragment() {
         swipeRefreshLayout.setOnRefreshListener {
             binding.rvBooks.visibility = View.GONE
             loadShimmer()
-            bookHomeVM.getBooks()
+
         }
     }
 

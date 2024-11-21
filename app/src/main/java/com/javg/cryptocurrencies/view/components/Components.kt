@@ -24,7 +24,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.javg.cryptocurrencies.R
-import com.javg.cryptocurrencies.data.enum.CRYEnumsTopBar
+import com.javg.cryptocurrencies.data.enums.CRYEnumsTopBar
 import com.javg.cryptocurrencies.data.model.CRYCardItemBuilder
 import com.javg.cryptocurrencies.data.model.CRYTopHeaderBuilder
 import com.javg.cryptocurrencies.utils.formatMoney
@@ -106,7 +106,7 @@ fun CRYCardBookUI(cryCardItemBuilder: CRYCardItemBuilder){
                 }
 
                 if (cryCardItemBuilder.getSubtitle().isNotEmpty()) {
-                    Text(text = cryCardItemBuilder.getSubtitle(),
+                    Text(text = cryCardItemBuilder.getSubtitle().toUpperCase(),
                         style = myTypography.subtitle1,
                         color = Text2)
                 }
@@ -114,7 +114,7 @@ fun CRYCardBookUI(cryCardItemBuilder: CRYCardItemBuilder){
             if (cryCardItemBuilder.getButtonAction()) {
                 TextButton(onClick = cryCardItemBuilder.getOnClick(),
                     modifier = Modifier.align(Alignment.Bottom)) {
-                    Text(text = "Ver todos",
+                    Text(text = if (cryCardItemBuilder.getHaveCollections()) "Ver todos" else "Ver",
                         style = myTypography.h4,
                         color = Action)
                 }

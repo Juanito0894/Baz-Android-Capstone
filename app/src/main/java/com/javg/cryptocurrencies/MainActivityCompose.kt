@@ -23,6 +23,10 @@ import androidx.compose.ui.Modifier
 import com.javg.cryptocurrencies.view.navigation.CRYNavigation
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.delay
+import okio.ByteString.Companion.decodeBase64
+import okio.ByteString.Companion.encodeUtf8
+import java.nio.charset.StandardCharsets
+import java.text.Normalizer
 
 @AndroidEntryPoint
 class MainActivityCompose : ComponentActivity() {

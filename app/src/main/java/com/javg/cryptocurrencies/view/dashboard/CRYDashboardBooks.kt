@@ -25,7 +25,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -35,10 +37,13 @@ import com.javg.cryptocurrencies.R
 import com.javg.cryptocurrencies.data.enums.CRYEnumsTopBar
 import com.javg.cryptocurrencies.data.enums.CRYEnumsTypeFlow
 import com.javg.cryptocurrencies.data.model.CRYCardItemBuilder
+import com.javg.cryptocurrencies.data.model.CRYDataState
+import com.javg.cryptocurrencies.data.model.CRYGeneralBook
 import com.javg.cryptocurrencies.data.model.CRYTopHeaderBuilder
 import com.javg.cryptocurrencies.utils.shimmerBackground
 import com.javg.cryptocurrencies.view.components.CRYCardBookUI
 import com.javg.cryptocurrencies.view.components.CRYContentBooksUI
+import com.javg.cryptocurrencies.view.components.CRYErrorScreen
 import com.javg.cryptocurrencies.view.components.CRYTopHeaderBarUI
 import com.javg.cryptocurrencies.view.theme.Error
 import com.javg.cryptocurrencies.view.theme.Primary200
@@ -50,8 +55,11 @@ import com.javg.cryptocurrencies.view.theme.robotoSlabFamily
 import com.javg.cryptocurrencies.view.viewmodel.CRYHomeVM
 
 @Composable
-fun CRYDashboardBooksScreen(homeVM: CRYHomeVM, onClick: (typeFlow: CRYEnumsTypeFlow, acronym: String) -> Unit){
-    val books by homeVM.stateGeneralBooks.collectAsState()
+fun CRYDashboardBooksScreen(
+    homeVM: CRYHomeVM,
+    onClick: (typeFlow: CRYEnumsTypeFlow, acronym: String) -> Unit){
+
+    val response by homeVM.stateGeneralBooks.collectAsState()
     val topHeaderBuilder = CRYTopHeaderBuilder()
         .withTypeHeader(CRYEnumsTopBar.TEXT_ONLY)
         .withTitle("Crytopbook")
@@ -61,30 +69,36 @@ fun CRYDashboardBooksScreen(homeVM: CRYHomeVM, onClick: (typeFlow: CRYEnumsTypeF
             .fillMaxSize()
             .background(Primary500)) {
         CRYTopHeaderBarUI(topHeaderBuilder)
-        CRYSearchBook()
-        CRYContentBooksUI{
-            if (books.isEmpty()) {
-                Column {
+        when(response) {
+            is CRYDataState.Loading -> {
+                Column(Modifier
+                    .fillMaxSize()
+                    .background(Color.White)) {
                     repeat(11){
                         CRYSkeletonBook()
                     }
                 }
-            } else {
-                LazyColumn {
-                    items(books){
-                        CRYCardBookUI(
-                            cryCardItemBuilder = CRYCardItemBuilder()
-                                .withTitle(it.fullName)
-                                .withSubtitle(it.acronym)
-                                .withIconId(it.logoId)
-                                .withButtonAction(true)
-                                .withHaveCollections(it.conversions.size > 1)
-                                .withOnClick {
-                                    homeVM.setBookInitials(it.acronym)
-                                    onClick(homeVM.getTypeView(it.conversions), it.acronym) })
+            }
+            is CRYDataState.Success -> {
+                CRYSearchBook()
+                CRYContentBooksUI{
+                    LazyColumn {
+                        items((response as CRYDataState.Success<List<CRYGeneralBook>>).data){
+                            CRYCardBookUI(
+                                cryCardItemBuilder = CRYCardItemBuilder()
+                                    .withTitle(it.fullName)
+                                    .withSubtitle(it.acronym)
+                                    .withIconId(it.logoId)
+                                    .withButtonAction(true)
+                                    .withHaveCollections(it.conversions.size > 1)
+                                    .withOnClick {
+                                        onClick(homeVM.getTypeView(it.conversions), it.acronym) })
+                        }
                     }
                 }
             }
+            is CRYDataState.Error -> CRYErrorScreen(title = stringResource(id = R.string.cry_internet_error_title), message = (response as CRYDataState.Error).message)
+            else -> {}
         }
     }
 }

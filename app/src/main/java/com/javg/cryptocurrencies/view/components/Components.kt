@@ -1,7 +1,9 @@
 package com.javg.cryptocurrencies.view.components
 
+import android.widget.Space
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -20,9 +22,13 @@ import androidx.compose.material.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.javg.cryptocurrencies.R
 import com.javg.cryptocurrencies.data.enums.CRYEnumsTopBar
 import com.javg.cryptocurrencies.data.model.CRYCardItemBuilder
@@ -37,6 +43,7 @@ import com.javg.cryptocurrencies.view.theme.Success
 import com.javg.cryptocurrencies.view.theme.Text1
 import com.javg.cryptocurrencies.view.theme.Text2
 import com.javg.cryptocurrencies.view.theme.myTypography
+import com.javg.cryptocurrencies.view.theme.robotoSlabFamily
 
 @Composable
 fun CRYTopHeaderBarUI(topHeaderBuilder: CRYTopHeaderBuilder){
@@ -152,6 +159,35 @@ fun CRYContentBooksUI(content: @Composable () -> Unit){
         shape = RoundedCornerShape(topStart = 5.dp, topEnd = 5.dp)
     ) {
         content.invoke()
+    }
+}
+
+@Composable
+fun CRYErrorScreen(title: String, message: String){
+    Column(
+        Modifier
+            .fillMaxSize()
+            .background(Color.White),
+        horizontalAlignment = Alignment.CenterHorizontally) {
+        Spacer(modifier = Modifier.weight(1f))
+        Image(
+            painter = painterResource(id = R.drawable.ic_image_conexion_error),
+            contentDescription = "")
+        Spacer(modifier = Modifier.height(88.dp))
+        Text(text = title,
+            fontSize = 22.sp,
+            fontFamily = robotoSlabFamily,
+            fontWeight = FontWeight.Medium)
+        Spacer(modifier = Modifier.height(18.dp))
+        Text(text = message
+            ,fontSize = 18.sp,
+            fontFamily = robotoSlabFamily,
+            fontWeight = FontWeight.Normal,
+            modifier = Modifier.padding(horizontal = 22.dp, vertical = 0.dp),
+            textAlign = TextAlign.Center,
+            color = Text2)
+        Spacer(modifier = Modifier.weight(1f))
+
     }
 }
 

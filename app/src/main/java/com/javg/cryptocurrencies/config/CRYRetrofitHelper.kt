@@ -10,6 +10,7 @@ import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
+import java.util.concurrent.TimeUnit
 import javax.inject.Singleton
 
 @Module
@@ -50,6 +51,9 @@ object CRYRetrofitHelper {
     @Singleton
     fun providerHttpClient(logging: HttpLoggingInterceptor): OkHttpClient.Builder {
         return OkHttpClient.Builder()
+            .readTimeout(1, TimeUnit.MINUTES)
+            .writeTimeout(1, TimeUnit.MINUTES)
+            .connectTimeout(1, TimeUnit.MINUTES)
             .addInterceptor { chain ->
                 val request = chain.request()
                     .newBuilder()

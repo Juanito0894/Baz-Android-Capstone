@@ -25,4 +25,6 @@
     <string name="cry_coins_list">Lista de monedas</string>
     <string name="cry_search_book">Buscar moneda</string>
     <string name="cry_have_conversions">Cuenta con las siguientes\nconversiones.</string>
+    <string name="cry_internet_error">Revisa tu conexión a datos o internet\npara volver a intentarlo.</string>
+    <string name="cry_internet_error_title">Problema de comunicación</string>
 </resources>

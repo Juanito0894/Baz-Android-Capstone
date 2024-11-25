@@ -68,3 +68,10 @@ data class CRYAskOrBids(
     @SerializedName("amount")
     var amount: String,
 )
+
+sealed class CRYDataState<out T>{
+    object Loading: CRYDataState<Nothing>()
+    data class Success<out T: Any>(val data: T): CRYDataState<T>()
+    data class Error(val message: String): CRYDataState<Nothing>()
+    object Idle: CRYDataState<Nothing>()
+}

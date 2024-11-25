@@ -6,10 +6,11 @@ import androidx.lifecycle.viewModelScope
 import com.javg.cryptocurrencies.data.domain.CRYGetBookUseCase
 import com.javg.cryptocurrencies.data.enums.CRYEnumsTypeFlow
 import com.javg.cryptocurrencies.data.model.CRYBookV2
+import com.javg.cryptocurrencies.data.model.CRYDataState
 import com.javg.cryptocurrencies.data.model.CRYGeneralBook
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -27,14 +28,8 @@ class CRYHomeVM @Inject constructor(
     application: Application,
     private val cryGetBookUseCase: CRYGetBookUseCase,
 ) : AndroidViewModel(application) {
-    private var _bookInitials = MutableStateFlow("")
-    val bookInitials: StateFlow<String> get() = _bookInitials
-
-    private val _bookCollections = MutableStateFlow(emptyList<CRYBookV2>())
-    val bookCollections: StateFlow<List<CRYBookV2>> get() = _bookCollections
-
-    private val _stateGeneralBooks = MutableStateFlow(emptyList<CRYGeneralBook>())
-    val stateGeneralBooks: StateFlow<List<CRYGeneralBook>> get() = _stateGeneralBooks
+    private val _stateGeneralBooks = MutableStateFlow<CRYDataState<List<CRYGeneralBook>>>(CRYDataState.Idle)
+    val stateGeneralBooks = _stateGeneralBooks.asStateFlow()
 
     init {
         queryBookFlow()
@@ -57,6 +52,7 @@ class CRYHomeVM @Inject constructor(
      */
     private fun queryBookFlow() {
         viewModelScope.launch {
+            _stateGeneralBooks.value = CRYDataState.Loading
             cryGetBookUseCase().collect{
                 _stateGeneralBooks.value = it
             }
@@ -65,12 +61,4 @@ class CRYHomeVM @Inject constructor(
 
     fun getTypeView(collections: List<CRYBookV2>) = if (collections.size > 1) CRYEnumsTypeFlow.COLLECTIONS else CRYEnumsTypeFlow.SINGLE
 
-    fun setBookInitials(bookInitials: String){
-        _bookInitials.value = bookInitials
-    }
-
-    fun queryCollections(){
-        val bookSelected = stateGeneralBooks.value.find { it.acronym == bookInitials.value }
-        _bookCollections.value = bookSelected?.conversions ?: emptyList()
-    }
 }

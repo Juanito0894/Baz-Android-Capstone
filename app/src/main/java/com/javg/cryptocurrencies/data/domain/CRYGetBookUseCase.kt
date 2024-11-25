@@ -1,5 +1,6 @@
 package com.javg.cryptocurrencies.data.domain
 
+import com.javg.cryptocurrencies.data.model.CRYDataState
 import com.javg.cryptocurrencies.data.model.CRYGeneralBook
 import com.javg.cryptocurrencies.data.repository.CRYBookRepository
 import kotlinx.coroutines.flow.Flow
@@ -22,13 +23,22 @@ class CRYGetBookUseCase @Inject constructor(
     private val cryTransformBooksUseCase: TransformBooksUseCase,
     private val crySaveDataUseCase: CRYSaveDataUseCase
 ) {
-    suspend operator fun invoke(): Flow<List<CRYGeneralBook>> = flow{
+    suspend operator fun invoke(): Flow<CRYDataState<List<CRYGeneralBook>>> = flow{
         repository.queryGeneralBooks().collect{
             if (it.isNotEmpty()){
-                emit(it)
+                emit(CRYDataState.Success(it))
             } else {
-                val generalBooks = cryTransformBooksUseCase(repository.getAvailableBooksFromApi())
-                crySaveDataUseCase(generalBooks)
+                when(val response = repository.getAvailableBooksFromApi()){
+                    is CRYDataState.Success -> {
+                        val generalBooks = cryTransformBooksUseCase(response.data)
+                        crySaveDataUseCase(generalBooks)
+                    }
+
+                    is CRYDataState.Error -> {
+                        emit(response)
+                    }
+                    else -> {}
+                }
             }
         }
     }

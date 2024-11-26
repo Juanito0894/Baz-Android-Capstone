@@ -5,13 +5,14 @@ import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.sp
+import java.text.DecimalFormat
+import java.text.DecimalFormatSymbols
+import java.util.Locale
 
 /**
  * Function that extends a string to be able to separate the text by a '_'
  * symbol and return the first element separated in it
  */
-fun String.separateStringCoins() = this.split("_")[0]
-
 fun String.getFirstCoinsText() = this.split("_").first()
 
 /**
@@ -30,4 +31,11 @@ fun String.formatMoney(): AnnotatedString {
         }
         append(this@formatMoney)
     }
+}
+
+fun String.formatAmount(): String {
+    val symbols = DecimalFormatSymbols(Locale.US)
+    val formatter = DecimalFormat("###,###,###", symbols)
+    val convertAmount = formatter.format(this.toDouble())
+    return String.format(Locale.US, "$%s", convertAmount)
 }

@@ -1,11 +1,12 @@
 package com.javg.cryptocurrencies.data.model
 
 data class CRYDetailBook(
+    var book: String = "",
     var high: String = "",
     var last: String = "",
     var low: String = "",
-    var askList: List<CRYAskOrBids>? = null,
-    var bidsList: List<CRYAskOrBids>? = null,
+    var askList: List<CRYAskOrBids> = emptyList(),
+    var bidsList: List<CRYAskOrBids> = emptyList(),
 )
 
 data class CRYDefaultBook(
@@ -15,9 +16,9 @@ data class CRYDefaultBook(
 )
 
 data class CRYGeneralBook(
-    var fullName: String,
-    var acronym: String,
-    var logoId: Int,
+    var fullName: String = "",
+    var acronym: String = "",
+    var logoId: Int = 0,
     var conversions: List<CRYBookV2> = emptyList()
 )
 

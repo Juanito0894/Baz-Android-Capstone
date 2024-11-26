@@ -1,9 +1,12 @@
 package com.javg.cryptocurrencies.data.domain
 
+import android.util.Log
+import com.javg.cryptocurrencies.data.model.CRYDataState
 import com.javg.cryptocurrencies.data.model.CRYDetailBook
 import com.javg.cryptocurrencies.data.repository.CRYOrderBookRepository
 import com.javg.cryptocurrencies.data.repository.CRYTickerRepository
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.async
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
@@ -23,6 +26,8 @@ class CRYGetListBookWithTickerUseCase @Inject constructor(
     private val tickerRepository: CRYTickerRepository,
     private val orderBookRepository: CRYOrderBookRepository,
     private val dispatcher: CoroutineDispatcher,
+    private val buildDetailBookUseCase: CRYBuildDetailBookUseCase,
+    private val saveDetailBookUseCase: CRYSaveDetailBookUseCase
 ) {
 
     /**
@@ -33,14 +38,20 @@ class CRYGetListBookWithTickerUseCase @Inject constructor(
      *
      * @return CRYDetailBook is the detail model of the consulted book
      */
-    suspend operator fun invoke(book: String): CRYDetailBook? = withContext(dispatcher) {
-        val ticker = tickerRepository.getTicker(book)
-        var detailBook: CRYDetailBook? = null
+    suspend operator fun invoke(book: String): CRYDataState<CRYDetailBook> = withContext(dispatcher) {
+        val detailBook: CRYDataState<CRYDetailBook>?
+        val ticker = async { tickerRepository.getTickerFromApi(book) }.await()
+        val orderBook = async { orderBookRepository.getOrderBookFromApi(book) }.await()
 
-        if (ticker != null) {
-            detailBook = orderBookRepository.getOrderBook(book)
+        if (ticker is CRYDataState.Success && orderBook is CRYDataState.Success){
+            Log.i("CRYGetListBookWithTickerUseCase","entra al if ninguno es error")
+            val buildDetailBook = buildDetailBookUseCase(ticker.data,orderBook.data)
+            saveDetailBookUseCase(buildDetailBook)
+            detailBook = CRYDataState.Success(buildDetailBook)
+            Log.i("CRYGetListBookWithTickerUseCase","Finaliza el proceso")
+        } else {
+            detailBook = CRYDataState.Error((ticker as CRYDataState.Error).message)
         }
-
         detailBook
     }
 }

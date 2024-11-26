@@ -2,6 +2,7 @@ package com.javg.cryptocurrencies.data.mapper
 
 import com.javg.cryptocurrencies.data.db.entity.CRYDetailBookEntity
 import com.javg.cryptocurrencies.data.db.entity.CRYGeneralBooksEntity
+import com.javg.cryptocurrencies.data.model.CRYAskOrBids
 import com.javg.cryptocurrencies.data.model.CRYBookV2
 import com.javg.cryptocurrencies.data.model.CRYDetailBook
 import com.javg.cryptocurrencies.data.model.CRYGeneralBook
@@ -12,14 +13,14 @@ import com.javg.cryptocurrencies.utils.CRYUtils
  * A function is extended to be able to treat the model
  * of the response to an entity model
  */
-fun CRYTicker.toEntity(): CRYDetailBookEntity {
+fun CRYDetailBook.toEntity(): CRYDetailBookEntity {
     return CRYDetailBookEntity(
         book = this.book,
         high = this.high,
         last = this.last,
         low = this.low,
-        askList = "",
-        bidsList = "",
+        askList = CRYUtils.listToJson(this.askList),
+        bidsList = CRYUtils.listToJson(this.bidsList),
     )
 }
 
@@ -32,6 +33,8 @@ fun CRYDetailBookEntity.toDomain(): CRYDetailBook {
         high = this.high,
         last = this.last,
         low = this.low,
+        askList = CRYUtils.jsonToList<List<CRYAskOrBids>>(this.askList),
+        bidsList = CRYUtils.jsonToList<List<CRYAskOrBids>>(this.bidsList)
     )
 }
 

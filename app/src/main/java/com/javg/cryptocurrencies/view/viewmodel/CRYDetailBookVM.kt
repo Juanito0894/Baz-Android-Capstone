@@ -6,11 +6,17 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.javg.cryptocurrencies.R
+import com.javg.cryptocurrencies.data.domain.CRYFindBookUseCase
 import com.javg.cryptocurrencies.data.domain.CRYGetListBookWithTickerUseCase
 import com.javg.cryptocurrencies.data.model.CRYAskOrBids
+import com.javg.cryptocurrencies.data.model.CRYDataState
 import com.javg.cryptocurrencies.data.model.CRYDetailBook
+import com.javg.cryptocurrencies.data.model.CRYGeneralBook
 import com.javg.cryptocurrencies.utils.CRYUtils
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -28,12 +34,17 @@ import javax.inject.Inject
 class CRYDetailBookVM @Inject constructor(
     application: Application,
     private val tickerUseCase: CRYGetListBookWithTickerUseCase,
+    private val findBookUseCase: CRYFindBookUseCase
 ) : AndroidViewModel(application) {
+
+    private val _responseDetailBook = MutableStateFlow<CRYDataState<CRYDetailBook>>(CRYDataState.Idle)
+    val responseDetailBook = _responseDetailBook.asStateFlow()
+
+    private val _generalBook = MutableStateFlow<CRYGeneralBook>(CRYGeneralBook())
+    val generalBook = _generalBook.asStateFlow()
 
     private var _tickerBook = MutableLiveData<CRYDetailBook>()
     private var _listAskOrBids = MutableLiveData<List<CRYAskOrBids>>()
-    private var _emptyData = MutableLiveData<Boolean>()
-    private var _updateTime = MutableLiveData<String>()
 
     val tickerBook: LiveData<CRYDetailBook>
         get() = _tickerBook
@@ -41,52 +52,26 @@ class CRYDetailBookVM @Inject constructor(
     val listAskOrBids: LiveData<List<CRYAskOrBids>>
         get() = _listAskOrBids
 
-    val emptyData: LiveData<Boolean>
-        get() = _emptyData
-
-    val updateTime: LiveData<String>
-        get() = _updateTime
-
-    init {
-        _updateTime.value = getTimeUpdate()
-    }
-
     /**
      * Consult the price information and ask list and bids of a specific book
      *
      * @param book is the name of the book to consult its specific information
      */
     fun getTicker(book: String) {
+        _responseDetailBook.value = CRYDataState.Loading
         viewModelScope.launch {
-            val ticker = tickerUseCase.invoke(book)
-            ticker?.let {
-                _tickerBook.value = it
-                it.askList?.let { list ->
-                    _listAskOrBids.value = list as MutableList<CRYAskOrBids>
-                    _updateTime.value = getTimeUpdate()
-                }
-            } ?: run {
-                _emptyData.value = true
-            }
+            _responseDetailBook.value = tickerUseCase.invoke(book)
         }
     }
 
-    /**
-     * Updates a list depending on the selection at view level
-     *
-     * @param listUpdate is the list that will update the view
-     */
-    fun sendListUpdate(listUpdate: List<CRYAskOrBids>) {
-        _listAskOrBids.value = listUpdate
+    fun getInfoBook(acronym: String){
+        viewModelScope.launch {
+            val book = findBookUseCase(acronym)
+            if (book != null){
+                _generalBook.update {
+                    it.copy(fullName = book.fullName)
+                }
+            }
+        }
     }
-
-    /**
-     * Returns a composite legend with the updated time of the remote service query
-     */
-    private fun getTimeUpdate(): String = String.format(
-        getApplication<Application>().applicationContext.getString(
-            R.string.cry_update_day,
-        ),
-        CRYUtils.getSaveTime(getApplication<Application>().applicationContext),
-    )
 }

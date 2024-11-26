@@ -27,4 +27,6 @@
     <string name="cry_have_conversions">Cuenta con las siguientes\nconversiones.</string>
     <string name="cry_internet_error">Revisa tu conexión a datos o internet\npara volver a intentarlo.</string>
     <string name="cry_internet_error_title">Problema de comunicación</string>
+    <string name="cry_bad_request_error">Libro de pedidos desconocido.</string>
+    <string name="cry_general_error">Por el momento no se encuentra disponible el servicio.</string>
 </resources>

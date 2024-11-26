@@ -11,6 +11,8 @@ import android.util.Log
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.javg.cryptocurrencies.data.model.CRYAskOrBids
+import java.text.DecimalFormat
+import java.text.DecimalFormatSymbols
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -86,33 +88,6 @@ object CRYUtils {
     }
 
     /**
-     * Save a time in device preferences
-     *
-     * @param context is the context of the activity
-     */
-    fun saveTime(context: Context) {
-        val sharedPreference = context.getSharedPreferences("PREFERENCE_NAME", Context.MODE_PRIVATE)
-        val editor = sharedPreference.edit()
-        editor.putString("time", getCurrentDay())
-        editor.apply()
-    }
-
-    /**
-     * Returns the time saved in device preferences
-     *
-     * @param context is the context of the activity
-     */
-    fun getSaveTime(context: Context): String {
-        val sharedPreference = context.getSharedPreferences("PREFERENCE_NAME", Context.MODE_PRIVATE)
-        return sharedPreference.getString("time", "") ?: ""
-    }
-
-    /**
-     * Convert a list of type CRYAskOrBids to a string
-     */
-    fun convertersListToJson(askOrBids: List<CRYAskOrBids>): String = Gson().toJson(askOrBids)
-
-    /**
      * Converts a string to a list of type CRYAskOrBids
      */
     fun convertersJsonToList(askOrBids: String) = Gson().fromJson(askOrBids, Array<CRYAskOrBids>::class.java).toList()
@@ -124,5 +99,12 @@ object CRYUtils {
     inline fun <reified T> jsonToList(jsonString: String): T{
         val typeToken = object : TypeToken<T>(){}.type
         return Gson().fromJson(jsonString, typeToken)
+    }
+
+    fun formatAmount(amount: String): String {
+        val symbols = DecimalFormatSymbols(Locale.US)
+        val formatter = DecimalFormat("###,###,###", symbols)
+        val convertAmount = formatter.format(amount.toDouble())
+        return String.format(Locale.US, "$%s", convertAmount)
     }
 }

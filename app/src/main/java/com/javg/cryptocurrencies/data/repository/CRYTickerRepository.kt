@@ -2,15 +2,11 @@ package com.javg.cryptocurrencies.data.repository
 
 import android.content.Context
 import com.javg.cryptocurrencies.data.db.dao.CRYTickerDao
-import com.javg.cryptocurrencies.data.db.entity.CRYDetailBookEntity
-import com.javg.cryptocurrencies.data.mapper.toDomain
-import com.javg.cryptocurrencies.data.mapper.toEntity
-import com.javg.cryptocurrencies.data.model.CRYBaseResponse
-import com.javg.cryptocurrencies.data.model.CRYDetailBook
+import com.javg.cryptocurrencies.data.model.CRYDataState
 import com.javg.cryptocurrencies.data.model.CRYTicker
 import com.javg.cryptocurrencies.data.network.CRYApi
-import com.javg.cryptocurrencies.utils.CRYUtils
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.delay
 import javax.inject.Inject
 
 /**
@@ -21,7 +17,7 @@ import javax.inject.Inject
  *
  * @param cryApi is an interface that contains the remote query endpoints
  *
- * @since 2.0
+ * @since 3.0
  */
 class CRYTickerRepository @Inject constructor(
     @ApplicationContext val context: Context,
@@ -29,26 +25,26 @@ class CRYTickerRepository @Inject constructor(
     private val tickerDao: CRYTickerDao,
 ) : CRYGenericRepository() {
 
-    /**
-     *
-     */
-    suspend fun getTicker(book: String): CRYDetailBook? {
-        var ticker = tickerDao.findById(book)
-
-        if (ticker == null) {
-            val tickerAux = getTickerFromApi(book)
-            tickerAux?.let {
-                CRYUtils.saveTime(context)
-                tickerDao.insert(it)
-            }
-            ticker = tickerDao.findById(book)
-        }
-        return ticker?.toDomain()
-    }
-
-    private suspend fun getTickerFromApi(book: String): CRYDetailBookEntity? {
-        var response = CRYBaseResponse<CRYTicker>()
-        getResponse { response = cryApi.getTicker(book) }
-        return response.payload?.toEntity()
+    suspend fun getTickerFromApi(book: String): CRYDataState<CRYTicker> {
+        var responseAux: CRYDataState<CRYTicker>? = null
+        delay(3000)
+        getResponseV2(
+            context = context,
+            callFunction = { cryApi.getTicker(book)},
+            onSuccess = { response ->
+                if (response.success) {
+                    response.payload?.let {
+                        responseAux = CRYDataState.Success(it)
+                    } ?: run {
+                        responseAux = CRYDataState.Error("Algun fallo hubo!")
+                    }
+                } else {
+                    responseAux = CRYDataState.Error("Algun fallo hubo!")
+                }
+            },
+            onError = {
+                responseAux = CRYDataState.Error(it)
+            })
+        return responseAux!!
     }
 }

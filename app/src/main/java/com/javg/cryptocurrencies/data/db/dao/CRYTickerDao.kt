@@ -13,7 +13,7 @@ interface CRYTickerDao {
     fun findById(book: String): CRYDetailBookEntity?
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    fun insert(ticker: CRYDetailBookEntity)
+    suspend fun insert(ticker: CRYDetailBookEntity)
 
     @Query("UPDATE ${CRYAppDatabase.DETAIL_BOOK_TABLE} SET askList = :ask, bidsList = :bids WHERE book = :book")
     fun update(ask: String, bids: String, book: String)

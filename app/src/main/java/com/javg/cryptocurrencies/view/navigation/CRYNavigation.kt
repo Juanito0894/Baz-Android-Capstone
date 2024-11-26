@@ -23,7 +23,7 @@ fun CRYNavigation(){
             CRYDashboardBooksScreen(homeVM){typeFlow, acronym ->
                 when(typeFlow) {
                     CRYEnumsTypeFlow.COLLECTIONS -> navController.navigate(CRYScreen.CollectionBooks.baseRoute+"/${acronym}")
-                    CRYEnumsTypeFlow.SINGLE -> navController.navigate(CRYScreen.DetailBook.baseRoute)
+                    CRYEnumsTypeFlow.SINGLE -> navController.navigate(CRYScreen.DetailBook.baseRoute+"/${acronym}")
                 }
             }
         }
@@ -35,8 +35,12 @@ fun CRYNavigation(){
                 navController.popBackStack()
             }
         }
-        composable(CRYScreen.DetailBook.baseRoute){
-            CRYDetailBookScreen()
+        composable(CRYScreen.DetailBook.baseRoute+"/{acronym}",
+            arguments = listOf(navArgument("acronym"){type = NavType.StringType})){ backStackEntry ->
+            val acronym = requireNotNull(backStackEntry.arguments?.getString("acronym"))
+            CRYDetailBookScreen(acronym){
+                navController.popBackStack()
+            }
         }
     }
 }

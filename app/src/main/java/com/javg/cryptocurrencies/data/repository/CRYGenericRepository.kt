@@ -4,6 +4,7 @@ import android.content.Context
 import com.javg.cryptocurrencies.R
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import retrofit2.HttpException
 import java.net.SocketException
 
 open class CRYGenericRepository {
@@ -20,17 +21,9 @@ open class CRYGenericRepository {
         } catch (e: Exception) {
             when(e){
                 is SocketException -> onError(context.getString(R.string.cry_internet_error))
+                is HttpException -> onError(context.getString(R.string.cry_bad_request_error))
+                else -> onError(context.getString(R.string.cry_general_error))
             }
-        }
-    }
-
-    suspend fun <T>getResponse(
-        callFunction: suspend () -> T,
-    ) {
-        try {
-            callFunction.invoke()
-        } catch (e: Exception) {
-            println("exception getResponse -> ${e.message}")
         }
     }
 }

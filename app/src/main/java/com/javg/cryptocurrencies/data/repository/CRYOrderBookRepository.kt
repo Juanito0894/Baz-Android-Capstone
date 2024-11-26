@@ -1,10 +1,11 @@
 package com.javg.cryptocurrencies.data.repository
 
+import android.content.Context
 import com.javg.cryptocurrencies.data.db.dao.CRYTickerDao
-import com.javg.cryptocurrencies.data.mapper.toDomainAll
-import com.javg.cryptocurrencies.data.model.CRYDetailBook
+import com.javg.cryptocurrencies.data.model.CRYDataState
+import com.javg.cryptocurrencies.data.model.CRYOrderBook
 import com.javg.cryptocurrencies.data.network.CRYApi
-import com.javg.cryptocurrencies.utils.CRYUtils
+import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 
 /**
@@ -16,43 +17,37 @@ import javax.inject.Inject
  *
  * @param cryApi is an interface that contains the remote query endpoints
  *
- * @since 2.0
+ * @since 3.0
  */
 class CRYOrderBookRepository @Inject constructor(
+    @ApplicationContext private val context: Context,
     private val cryApi: CRYApi,
     private val tickerDao: CRYTickerDao,
-) {
-
-    /**
-     * Returns a book detail model obtaining the information from the database or,
-     * if it is empty, consult it with the remote api
-     *
-     * @param book is the name of the book to consult its specific information
-     */
-    suspend fun getOrderBook(book: String): CRYDetailBook {
-        var ticker = tickerDao.findById(book)
-
-        ticker?.let { detailBookEntity ->
-            if (detailBookEntity.askList.isEmpty() || detailBookEntity.bidsList.isEmpty()) {
-                val response = getOrderBookFromApi(book)
-                response.payload?.let {
-                    tickerDao.update(
-                        ask = CRYUtils.convertersListToJson(it.asksList),
-                        bids = CRYUtils.convertersListToJson(it.bidsList),
-                        book = book,
-                    )
-                }
-                ticker = tickerDao.findById(book)
-            }
-        }
-
-        return ticker?.toDomainAll() ?: CRYDetailBook()
-    }
-
+): CRYGenericRepository() {
     /**
      * Returns a book order type model consulting the information remotely to an api
      *
      * @param book is the name of the book to consult its specific information
      */
-    private suspend fun getOrderBookFromApi(book: String) = cryApi.getOrderBook(book)
+    suspend fun getOrderBookFromApi(book: String): CRYDataState<CRYOrderBook>{
+        var responseAux: CRYDataState<CRYOrderBook>? = null
+        getResponseV2(
+            context = context,
+            callFunction = {cryApi.getOrderBook(book)},
+            onSuccess = { response ->
+                if (response.success) {
+                    response.payload?.let {
+                        responseAux = CRYDataState.Success(it)
+                    }?: run {
+                        responseAux = CRYDataState.Error("Algun fallo!!")
+                    }
+                } else {
+                    responseAux = CRYDataState.Error("Algun fallo!!")
+                }
+            },
+            onError = {
+                responseAux = CRYDataState.Error(it)
+            })
+        return responseAux!!
+    }
 }

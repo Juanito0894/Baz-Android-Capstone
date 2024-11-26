@@ -19,12 +19,14 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Icon
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -32,18 +34,23 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.javg.cryptocurrencies.R
 import com.javg.cryptocurrencies.data.enums.CRYEnumsTopBar
+import com.javg.cryptocurrencies.data.model.CRYDataState
+import com.javg.cryptocurrencies.data.model.CRYDetailBook
 import com.javg.cryptocurrencies.data.model.CRYTopHeaderBuilder
-import com.javg.cryptocurrencies.utils.formatMoney
+import com.javg.cryptocurrencies.utils.formatAmount
+import com.javg.cryptocurrencies.utils.shimmerBackground
 import com.javg.cryptocurrencies.view.components.CRYContentBooksUI
+import com.javg.cryptocurrencies.view.components.CRYErrorScreen
 import com.javg.cryptocurrencies.view.components.CRYTopHeaderBarUI
 import com.javg.cryptocurrencies.view.theme.Background1
 import com.javg.cryptocurrencies.view.theme.Neutral
@@ -51,18 +58,24 @@ import com.javg.cryptocurrencies.view.theme.Primary500
 import com.javg.cryptocurrencies.view.theme.Text1
 import com.javg.cryptocurrencies.view.theme.myTypography
 import com.javg.cryptocurrencies.view.theme.robotoSlabFamily
-import com.javg.cryptocurrencies.view.viewmodel.CRYHomeVM
+import com.javg.cryptocurrencies.view.viewmodel.CRYDetailBookVM
 
 @Composable
-fun CRYDetailBookScreen() {
+fun CRYDetailBookScreen(acronym: String, onClickBack: () -> Unit) {
+    val detailVM: CRYDetailBookVM = hiltViewModel()
+    val response by detailVM.responseDetailBook.collectAsState()
+    val generalBook by detailVM.generalBook.collectAsState()
+
     LaunchedEffect(key1 = true) {
-        Log.e("CRYDetailBookScreen","-------llega al composeable")
+        Log.e("CRYDetailBookScreen","-------book -> $acronym")
+        detailVM.getTicker("btc_mxn")
+        detailVM.getInfoBook(acronym)
     }
     val currentContext = LocalContext.current
     val topBarBuilder = CRYTopHeaderBuilder()
-        .withTitle("Bitcoin")
+        .withTitle(generalBook.fullName)
         .withTypeHeader(CRYEnumsTopBar.NORMAL)
-        .withOnClick { }
+        .withOnClick { onClickBack() }
 
     val elements = (1..100).map { "Item $it" }
     val state = rememberLazyListState()
@@ -103,49 +116,61 @@ fun CRYDetailBookScreen() {
     ) {
 
         CRYTopHeaderBarUI(topHeaderBuilder = topBarBuilder)
-        Column(
-            Modifier
-                .animateContentSize()
-                .fillMaxWidth()
-                .height(animatedDpState),
-            horizontalAlignment = Alignment.CenterHorizontally) {
-            Spacer(Modifier.height(8.dp))
-            Text(
-                text = stringResource(R.string.cry_last_price),
-                fontFamily = robotoSlabFamily,
-                fontWeight = FontWeight.SemiBold,
-                fontSize = 22.sp,
-                color = Neutral
-            )
-            Spacer(Modifier.height(8.dp))
-            Text(
-                text = "410060.00".formatMoney(),
-                style = myTypography.h1,
-                color = Neutral
-            )
-            Spacer(Modifier.height(18.dp))
-            Row {
-                CRYSectionInfoMoney()
-                CRYSectionInfoMoney()
+
+        when(response) {
+            is CRYDataState.Loading -> {
+                CRYSkeletonDetail()
             }
-            Spacer(Modifier.height(12.dp))
-        }
-        CRYSectionButton(
-            onClickButtonLeft = {
-                Toast.makeText(currentContext, "Click button left.", Toast.LENGTH_SHORT).show()
-            }){
-            Toast.makeText(currentContext, "Click button right.", Toast.LENGTH_SHORT).show()
-        }
-        CRYContentBooksUI {
-            LazyColumn(
-                state = state,
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                items(elements){
-                    Spacer(Modifier.height(16.dp))
-                    Text(text = "Aqui podemos ver un $it.", fontSize = 16.sp)
+            is CRYDataState.Success -> {
+                Column(
+                    Modifier
+                        .animateContentSize()
+                        .fillMaxWidth()
+                        .height(animatedDpState),
+                    horizontalAlignment = Alignment.CenterHorizontally) {
+                    Spacer(Modifier.height(8.dp))
+                    Text(
+                        text = stringResource(R.string.cry_last_price),
+                        fontFamily = robotoSlabFamily,
+                        fontWeight = FontWeight.SemiBold,
+                        fontSize = 22.sp,
+                        color = Neutral
+                    )
+                    Spacer(Modifier.height(8.dp))
+                    Text(
+                        text = (response as CRYDataState.Success<CRYDetailBook>).data.last.formatAmount(),
+                        style = myTypography.h1,
+                        color = Neutral
+                    )
+                    Spacer(Modifier.height(18.dp))
+                    Row {
+                        CRYSectionInfoMoney(text = "Más bajo", price = (response as CRYDataState.Success<CRYDetailBook>).data.low, idIcon = R.drawable.ic_arrow_down)
+                        CRYSectionInfoMoney(text = "Más alto", price = (response as CRYDataState.Success<CRYDetailBook>).data.high, idIcon = R.drawable.ic_arrow_up)
+                    }
+                    Spacer(Modifier.height(12.dp))
+                }
+                CRYSectionButton(
+                    onClickButtonLeft = {
+                        Toast.makeText(currentContext, "Click button left.", Toast.LENGTH_SHORT).show()
+                    }){
+                    Toast.makeText(currentContext, "Click button right.", Toast.LENGTH_SHORT).show()
+                }
+                CRYContentBooksUI {
+                    LazyColumn(
+                        state = state,
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        items(elements){
+                            Spacer(Modifier.height(16.dp))
+                            Text(text = "Aqui podemos ver un $it.", fontSize = 16.sp)
+                        }
+                    }
                 }
             }
+            is CRYDataState.Error -> {
+                CRYErrorScreen(title = stringResource(id = R.string.cry_internet_error_title), message = (response as CRYDataState.Error).message)
+            }
+            else -> {}
         }
     }
 }
@@ -205,7 +230,7 @@ fun CRYSectionButton(onClickButtonLeft: ()-> Unit, onClickButtonRight: ()-> Unit
 }
 
 @Composable
-fun CRYSectionInfoMoney() {
+fun CRYSectionInfoMoney(text: String, price: String, idIcon: Int) {
     Column(
         Modifier
             .background(Primary500)
@@ -216,18 +241,71 @@ fun CRYSectionInfoMoney() {
         verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Icon(
-                painter = painterResource(id = R.drawable.ic_arrow_up),
+                painter = painterResource(id = idIcon),
                 contentDescription = "",
                 tint = Neutral)
             Spacer(Modifier.width(16.dp))
-            Text(text = "Más bajo",
+            Text(text = text,
                 style = myTypography.h3,
                 fontWeight = FontWeight.Medium,
                 color = Neutral)
         }
         Text(
-            text = "0.00001331".formatMoney(),
+            text = price.formatAmount(),
             style = myTypography.body1,
             color = Neutral)
+    }
+}
+
+@Composable
+fun CRYSkeletonDetail(){
+    Column(
+        Modifier
+            .fillMaxSize()
+            .background(Color.White),
+        verticalArrangement = Arrangement.Top,
+        horizontalAlignment = Alignment.CenterHorizontally) {
+        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier
+            .width(200.dp)
+            .height(40.dp)
+            .shimmerBackground(RoundedCornerShape(2.dp)))
+        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier
+            .width(300.dp)
+            .height(40.dp)
+            .shimmerBackground(RoundedCornerShape(2.dp)))
+        Spacer(modifier = Modifier.height(16.dp))
+        Row(Modifier.padding(horizontal = 40.dp, vertical = 0.dp)) {
+            Spacer(modifier = Modifier
+                .height(60.dp)
+                .weight(1f)
+                .shimmerBackground(RoundedCornerShape(2.dp)))
+            Spacer(modifier = Modifier.width(56.dp))
+            Spacer(modifier = Modifier
+                .height(60.dp)
+                .weight(1f)
+                .shimmerBackground(RoundedCornerShape(2.dp)))
+        }
+        Spacer(modifier = Modifier.height(16.dp))
+        Row(Modifier.padding(horizontal = 24.dp, vertical = 0.dp)) {
+            Spacer(modifier = Modifier
+                .height(40.dp)
+                .weight(1f)
+                .shimmerBackground(RoundedCornerShape(2.dp)))
+            Spacer(modifier = Modifier.width(8.dp))
+            Spacer(modifier = Modifier
+                .height(40.dp)
+                .weight(1f)
+                .shimmerBackground(RoundedCornerShape(2.dp)))
+        }
+        Spacer(modifier = Modifier.height(16.dp))
+        repeat(6){
+            Spacer(modifier = Modifier
+                .width(340.dp)
+                .height(35.dp)
+                .shimmerBackground(RoundedCornerShape(2.dp)))
+            Spacer(modifier = Modifier.height(16.dp))
+        }
     }
 }

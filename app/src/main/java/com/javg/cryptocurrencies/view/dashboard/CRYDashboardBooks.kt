@@ -30,7 +30,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.javg.cryptocurrencies.R
@@ -45,7 +44,6 @@ import com.javg.cryptocurrencies.view.components.CRYCardBookUI
 import com.javg.cryptocurrencies.view.components.CRYContentBooksUI
 import com.javg.cryptocurrencies.view.components.CRYErrorScreen
 import com.javg.cryptocurrencies.view.components.CRYTopHeaderBarUI
-import com.javg.cryptocurrencies.view.theme.Error
 import com.javg.cryptocurrencies.view.theme.Primary200
 import com.javg.cryptocurrencies.view.theme.Primary500
 import com.javg.cryptocurrencies.view.theme.Text1
@@ -71,16 +69,19 @@ fun CRYDashboardBooksScreen(
         CRYTopHeaderBarUI(topHeaderBuilder)
         when(response) {
             is CRYDataState.Loading -> {
-                Column(Modifier
-                    .fillMaxSize()
-                    .background(Color.White)) {
+                Column(
+                    Modifier
+                        .fillMaxSize()
+                        .background(Color.White)) {
                     repeat(11){
                         CRYSkeletonBook()
                     }
                 }
             }
             is CRYDataState.Success -> {
-                CRYSearchBook()
+                CRYSearchBook{ value ->
+                    homeVM.searchBook(value)
+                }
                 CRYContentBooksUI{
                     LazyColumn {
                         items((response as CRYDataState.Success<List<CRYGeneralBook>>).data){
@@ -103,13 +104,10 @@ fun CRYDashboardBooksScreen(
     }
 }
 
-@Preview
 @Composable
-fun CRYSearchBook(){
+fun CRYSearchBook(onValue: (String) -> Unit){
     val currentContext = LocalContext.current
-    var searchString by remember {
-        mutableStateOf("")
-    }
+    var searchString by remember { mutableStateOf("") }
 
     Card(
         Modifier
@@ -133,16 +131,19 @@ fun CRYSearchBook(){
                 value = searchString,
                 onValueChange = {
                     searchString = it
+                    onValue(it)
                 },
-                modifier = Modifier.height(24.dp),
+                modifier = Modifier
+                    .height(24.dp),
                 textStyle = TextStyle(
-                    color = Error
+                    color = Text1
                 ),
                 decorationBox = { innerTextField ->
                     Row(modifier = Modifier
                         .fillMaxWidth()
                         .background(Primary200),
-                        verticalAlignment = Alignment.CenterVertically) {
+                        verticalAlignment = Alignment.CenterVertically,) {
+
                         if (searchString.isEmpty()) {
                             Spacer(Modifier.width(8.dp))
                             Text(

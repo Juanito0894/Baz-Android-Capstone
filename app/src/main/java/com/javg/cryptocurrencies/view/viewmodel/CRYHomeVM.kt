@@ -31,6 +31,8 @@ class CRYHomeVM @Inject constructor(
     private val _stateGeneralBooks = MutableStateFlow<CRYDataState<List<CRYGeneralBook>>>(CRYDataState.Idle)
     val stateGeneralBooks = _stateGeneralBooks.asStateFlow()
 
+    private val _originalList = MutableStateFlow<List<CRYGeneralBook>>(emptyList())
+
     init {
         queryBookFlow()
     }
@@ -54,9 +56,18 @@ class CRYHomeVM @Inject constructor(
         viewModelScope.launch {
             _stateGeneralBooks.value = CRYDataState.Loading
             cryGetBookUseCase().collect{
+                when(it) {
+                    is CRYDataState.Success -> _originalList.value = it.data
+                    else -> {}
+                }
                 _stateGeneralBooks.value = it
             }
         }
+    }
+
+    fun searchBook(value: String){
+        val generalBooksAux = _originalList.value.filter { it.fullName.lowercase().contains(value) }
+        _stateGeneralBooks.value = CRYDataState.Success(generalBooksAux)
     }
 
     fun getTypeView(collections: List<CRYBookV2>) = if (collections.size > 1) CRYEnumsTypeFlow.COLLECTIONS else CRYEnumsTypeFlow.SINGLE

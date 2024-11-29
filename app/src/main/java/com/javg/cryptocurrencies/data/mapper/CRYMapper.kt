@@ -38,20 +38,6 @@ fun CRYDetailBookEntity.toDomain(): CRYDetailBook {
     )
 }
 
-/**
- * An entity model function is extended to handle it and pass
- * it to a general model by updating missing data
- */
-fun CRYDetailBookEntity.toDomainAll(): CRYDetailBook {
-    return CRYDetailBook(
-        high = this.high,
-        last = this.last,
-        low = this.low,
-        askList = CRYUtils.convertersJsonToList(this.askList),
-        bidsList = CRYUtils.convertersJsonToList(this.bidsList),
-    )
-}
-
 fun CRYGeneralBook.toEntity(): CRYGeneralBooksEntity {
     return CRYGeneralBooksEntity(
         acronym = this.acronym,

@@ -31,6 +31,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.javg.cryptocurrencies.R
 import com.javg.cryptocurrencies.data.enums.CRYEnumsTopBar
+import com.javg.cryptocurrencies.data.model.CRYCardInformationBookBuilder
 import com.javg.cryptocurrencies.data.model.CRYCardItemBuilder
 import com.javg.cryptocurrencies.data.model.CRYTopHeaderBuilder
 import com.javg.cryptocurrencies.utils.formatMoney
@@ -188,6 +189,36 @@ fun CRYErrorScreen(title: String, message: String){
             color = Text2)
         Spacer(modifier = Modifier.weight(1f))
 
+    }
+}
+
+@Composable
+fun CRYCardInformationBookUI(cryCardInformationBookBuilder: CRYCardInformationBookBuilder){
+    Row(Modifier.fillMaxWidth()
+        .padding(
+            horizontal = 16.dp,
+            vertical = 6.dp),
+        horizontalArrangement = Arrangement.SpaceBetween) {
+        Column {
+            Text(text = "Precio",
+                style = myTypography.h2,
+                color = Text1)
+            Text(text = "Monto",
+                style = myTypography.body1,
+                color = Success)
+        }
+        Column(horizontalAlignment = Alignment.End) {
+            if (cryCardInformationBookBuilder.getPrice().isNotEmpty()) {
+                Text(text = cryCardInformationBookBuilder.getPrice(),
+                    style = myTypography.h2,
+                    color = Text1, textAlign = TextAlign.End)
+            }
+            if (cryCardInformationBookBuilder.getAmount().isNotEmpty()) {
+                Text(text = cryCardInformationBookBuilder.getAmount(),
+                    style = myTypography.body1,
+                    color = Success)
+            }
+        }
     }
 }
 

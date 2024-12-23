@@ -9,3 +9,8 @@ enum class CRYEnumsTypeFlow{
     COLLECTIONS,
     SINGLE
 }
+
+enum class CRYEnumsTypeList{
+    ASK,
+    BIDS
+}

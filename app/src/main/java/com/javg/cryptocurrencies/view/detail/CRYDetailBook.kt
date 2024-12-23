@@ -1,7 +1,6 @@
 package com.javg.cryptocurrencies.view.detail
 
 import android.util.Log
-import android.widget.Toast
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
@@ -44,11 +43,14 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.javg.cryptocurrencies.R
 import com.javg.cryptocurrencies.data.enums.CRYEnumsTopBar
+import com.javg.cryptocurrencies.data.enums.CRYEnumsTypeList
+import com.javg.cryptocurrencies.data.model.CRYCardInformationBookBuilder
 import com.javg.cryptocurrencies.data.model.CRYDataState
 import com.javg.cryptocurrencies.data.model.CRYDetailBook
 import com.javg.cryptocurrencies.data.model.CRYTopHeaderBuilder
 import com.javg.cryptocurrencies.utils.formatAmount
 import com.javg.cryptocurrencies.utils.shimmerBackground
+import com.javg.cryptocurrencies.view.components.CRYCardInformationBookUI
 import com.javg.cryptocurrencies.view.components.CRYContentBooksUI
 import com.javg.cryptocurrencies.view.components.CRYErrorScreen
 import com.javg.cryptocurrencies.view.components.CRYTopHeaderBarUI
@@ -65,6 +67,7 @@ fun CRYDetailBookScreen(acronym: String, onClickBack: () -> Unit) {
     val detailVM: CRYDetailBookVM = hiltViewModel()
     val response by detailVM.responseDetailBook.collectAsState()
     val generalBook by detailVM.generalBook.collectAsState()
+    val informationBooks by detailVM.listAskOrBids.collectAsState()
 
     LaunchedEffect(key1 = true) {
         Log.e("CRYDetailBookScreen","-------book -> $acronym")
@@ -77,7 +80,6 @@ fun CRYDetailBookScreen(acronym: String, onClickBack: () -> Unit) {
         .withTypeHeader(CRYEnumsTopBar.NORMAL)
         .withOnClick { onClickBack() }
 
-    val elements = (1..100).map { "Item $it" }
     val state = rememberLazyListState()
     var expanded by remember {
         mutableStateOf(true)
@@ -151,18 +153,22 @@ fun CRYDetailBookScreen(acronym: String, onClickBack: () -> Unit) {
                 }
                 CRYSectionButton(
                     onClickButtonLeft = {
-                        Toast.makeText(currentContext, "Click button left.", Toast.LENGTH_SHORT).show()
+                        detailVM.updateInformationBooks(CRYEnumsTypeList.ASK)
                     }){
-                    Toast.makeText(currentContext, "Click button right.", Toast.LENGTH_SHORT).show()
+                    detailVM.updateInformationBooks(CRYEnumsTypeList.BIDS)
                 }
                 CRYContentBooksUI {
                     LazyColumn(
                         state = state,
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        items(elements){
+                        items(informationBooks){
                             Spacer(Modifier.height(16.dp))
-                            Text(text = "Aqui podemos ver un $it.", fontSize = 16.sp)
+                            CRYCardInformationBookUI(
+                                cryCardInformationBookBuilder = CRYCardInformationBookBuilder()
+                                    .withPrice(it.price.formatAmount())
+                                    .withAmount(it.amount.formatAmount())
+                            )
                         }
                     }
                 }

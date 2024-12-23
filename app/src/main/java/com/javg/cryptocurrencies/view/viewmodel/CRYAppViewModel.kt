@@ -1,6 +1,7 @@
 package com.javg.cryptocurrencies.view.viewmodel
 
 import android.app.Application
+import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import com.javg.cryptocurrencies.utils.CRYUtils
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -12,6 +13,7 @@ class CRYAppViewModel(application: Application) : AndroidViewModel(application) 
     val uiStateNetwork: StateFlow<Boolean> = _uiStateNetwork
 
     init {
+        Log.i("CRYAppViewModel","Initialization app viewModel")
         CRYUtils.isInternetAvailable(application.applicationContext) {
             _uiStateNetwork.value = it
         }

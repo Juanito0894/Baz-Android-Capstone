@@ -40,17 +40,21 @@ class CRYGetListBookWithTickerUseCase @Inject constructor(
      */
     suspend operator fun invoke(book: String): CRYDataState<CRYDetailBook> = withContext(dispatcher) {
         val detailBook: CRYDataState<CRYDetailBook>?
-        val ticker = async { tickerRepository.getTickerFromApi(book) }.await()
-        val orderBook = async { orderBookRepository.getOrderBookFromApi(book) }.await()
+        val detailDB = orderBookRepository.getByIdOrderBook(book)
 
-        if (ticker is CRYDataState.Success && orderBook is CRYDataState.Success){
-            Log.i("CRYGetListBookWithTickerUseCase","entra al if ninguno es error")
-            val buildDetailBook = buildDetailBookUseCase(ticker.data,orderBook.data)
-            saveDetailBookUseCase(buildDetailBook)
-            detailBook = CRYDataState.Success(buildDetailBook)
-            Log.i("CRYGetListBookWithTickerUseCase","Finaliza el proceso")
+        if (detailDB != null) {
+            detailBook = CRYDataState.Success(detailDB)
         } else {
-            detailBook = CRYDataState.Error((ticker as CRYDataState.Error).message)
+            val ticker = async { tickerRepository.getTickerFromApi(book) }.await()
+            val orderBook = async { orderBookRepository.getOrderBookFromApi(book) }.await()
+
+            if (ticker is CRYDataState.Success && orderBook is CRYDataState.Success){
+                val buildDetailBook = buildDetailBookUseCase(ticker.data,orderBook.data)
+                saveDetailBookUseCase(buildDetailBook)
+                detailBook = CRYDataState.Success(buildDetailBook)
+            } else {
+                detailBook = CRYDataState.Error((ticker as CRYDataState.Error).message)
+            }
         }
         detailBook
     }

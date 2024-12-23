@@ -28,6 +28,7 @@ object CRYUtils {
         val TAG = "isInternetAvailable"
         var result = false
         val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        Log.e(TAG, "Llega a validar de nuevo la conexion de red")
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             val networkCapabilities = connectivityManager.activeNetwork ?: return false
             val actNw =

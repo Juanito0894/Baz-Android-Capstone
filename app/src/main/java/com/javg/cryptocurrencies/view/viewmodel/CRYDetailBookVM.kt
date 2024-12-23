@@ -5,14 +5,13 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.javg.cryptocurrencies.R
 import com.javg.cryptocurrencies.data.domain.CRYFindBookUseCase
 import com.javg.cryptocurrencies.data.domain.CRYGetListBookWithTickerUseCase
+import com.javg.cryptocurrencies.data.enums.CRYEnumsTypeList
 import com.javg.cryptocurrencies.data.model.CRYAskOrBids
 import com.javg.cryptocurrencies.data.model.CRYDataState
 import com.javg.cryptocurrencies.data.model.CRYDetailBook
 import com.javg.cryptocurrencies.data.model.CRYGeneralBook
-import com.javg.cryptocurrencies.utils.CRYUtils
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -40,17 +39,15 @@ class CRYDetailBookVM @Inject constructor(
     private val _responseDetailBook = MutableStateFlow<CRYDataState<CRYDetailBook>>(CRYDataState.Idle)
     val responseDetailBook = _responseDetailBook.asStateFlow()
 
-    private val _generalBook = MutableStateFlow<CRYGeneralBook>(CRYGeneralBook())
+    private val _generalBook = MutableStateFlow(CRYGeneralBook())
     val generalBook = _generalBook.asStateFlow()
 
-    private var _tickerBook = MutableLiveData<CRYDetailBook>()
-    private var _listAskOrBids = MutableLiveData<List<CRYAskOrBids>>()
+    private var _listAskOrBids = MutableStateFlow<List<CRYAskOrBids>>(emptyList())
+    val listAskOrBids = _listAskOrBids.asStateFlow()
 
+    private var _tickerBook = MutableLiveData<CRYDetailBook>()
     val tickerBook: LiveData<CRYDetailBook>
         get() = _tickerBook
-
-    val listAskOrBids: LiveData<List<CRYAskOrBids>>
-        get() = _listAskOrBids
 
     /**
      * Consult the price information and ask list and bids of a specific book
@@ -60,7 +57,11 @@ class CRYDetailBookVM @Inject constructor(
     fun getTicker(book: String) {
         _responseDetailBook.value = CRYDataState.Loading
         viewModelScope.launch {
-            _responseDetailBook.value = tickerUseCase.invoke(book)
+            val tickerModel = tickerUseCase.invoke(book)
+            if (tickerModel is CRYDataState.Success) {
+                _listAskOrBids.value = tickerModel.data.askList
+            }
+            _responseDetailBook.value = tickerModel
         }
     }
 
@@ -71,6 +72,17 @@ class CRYDetailBookVM @Inject constructor(
                 _generalBook.update {
                     it.copy(fullName = book.fullName)
                 }
+            }
+        }
+    }
+
+    fun updateInformationBooks(typeList: CRYEnumsTypeList) {
+        when (typeList) {
+            CRYEnumsTypeList.ASK -> {
+                _listAskOrBids.value = (_responseDetailBook.value as CRYDataState.Success).data.askList
+            }
+            CRYEnumsTypeList.BIDS -> {
+                _listAskOrBids.value = (_responseDetailBook.value as CRYDataState.Success).data.bidsList
             }
         }
     }

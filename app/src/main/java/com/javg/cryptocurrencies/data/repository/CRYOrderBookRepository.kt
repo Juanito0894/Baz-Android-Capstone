@@ -2,7 +2,9 @@ package com.javg.cryptocurrencies.data.repository
 
 import android.content.Context
 import com.javg.cryptocurrencies.data.db.dao.CRYTickerDao
+import com.javg.cryptocurrencies.data.mapper.toDomain
 import com.javg.cryptocurrencies.data.model.CRYDataState
+import com.javg.cryptocurrencies.data.model.CRYDetailBook
 import com.javg.cryptocurrencies.data.model.CRYOrderBook
 import com.javg.cryptocurrencies.data.network.CRYApi
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -50,4 +52,6 @@ class CRYOrderBookRepository @Inject constructor(
             })
         return responseAux!!
     }
+
+    suspend fun getByIdOrderBook(book: String): CRYDetailBook? = tickerDao.findById(book)?.toDomain()
 }

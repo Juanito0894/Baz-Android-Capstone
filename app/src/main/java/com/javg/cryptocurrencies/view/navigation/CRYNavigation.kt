@@ -31,8 +31,12 @@ fun CRYNavigation(){
             CRYScreen.CollectionBooks.baseRoute+"/{acronym}",
             arguments = listOf(navArgument("acronym"){type = NavType.StringType})){ backStackEntry ->
             val acronym = requireNotNull(backStackEntry.arguments?.getString("acronym"))
-            CRYCollectionsBookScreen(acronym){
-                navController.popBackStack()
+            CRYCollectionsBookScreen(
+                acronym,
+                onClickBack = {
+                    navController.popBackStack()
+                }){
+                navController.navigate(CRYScreen.DetailBook.baseRoute+"/${it}")
             }
         }
         composable(CRYScreen.DetailBook.baseRoute+"/{acronym}",

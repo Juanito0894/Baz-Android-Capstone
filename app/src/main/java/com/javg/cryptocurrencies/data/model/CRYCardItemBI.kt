@@ -1,5 +1,7 @@
 package com.javg.cryptocurrencies.data.model
 
+import com.javg.cryptocurrencies.data.enums.CRYEnumsTypeCard
+
 interface CRYCardItemBI {
     fun withTitle(title: String): CRYCardItemBuilder
     fun withSubtitle(subtitle: String): CRYCardItemBuilder
@@ -9,6 +11,8 @@ interface CRYCardItemBI {
     fun withTextSubtitleMoney(textMoney: String): CRYCardItemBuilder
     fun withOnClick(action: () -> Unit): CRYCardItemBuilder
     fun withHaveCollections(haveCollections: Boolean): CRYCardItemBuilder
+    fun withOnClickCard(onClickCard: () -> Unit): CRYCardItemBuilder
+    fun withTypeCard(typeCard: CRYEnumsTypeCard): CRYCardItemBuilder
 
     fun getTitle(): String
     fun getSubtitle(): String
@@ -18,4 +22,6 @@ interface CRYCardItemBI {
     fun getTextSubtitleMoney(): String
     fun getOnClick(): () -> Unit
     fun getHaveCollections(): Boolean
+    fun getOnClickCard(): () -> Unit
+    fun getTypeCard(): CRYEnumsTypeCard
 }

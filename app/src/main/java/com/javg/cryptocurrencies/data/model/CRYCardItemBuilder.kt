@@ -1,5 +1,7 @@
 package com.javg.cryptocurrencies.data.model
 
+import com.javg.cryptocurrencies.data.enums.CRYEnumsTypeCard
+
 class CRYCardItemBuilder: CRYCardItemBI {
     private var title = ""
     private var subtitle = ""
@@ -9,6 +11,8 @@ class CRYCardItemBuilder: CRYCardItemBI {
     private var textSubtitleMoney = ""
     private var callBack: (() -> Unit )? = null
     private var haveCollections = false
+    private var onClickCard: (() -> Unit)? = null
+    private var typeCard = CRYEnumsTypeCard.DASHBOARD
 
     override fun withTitle(title: String): CRYCardItemBuilder {
         this.title = title
@@ -50,6 +54,16 @@ class CRYCardItemBuilder: CRYCardItemBI {
         return this
     }
 
+    override fun withOnClickCard(onClickCard: () -> Unit): CRYCardItemBuilder {
+        this.onClickCard = onClickCard
+        return this
+    }
+
+    override fun withTypeCard(typeCard: CRYEnumsTypeCard): CRYCardItemBuilder {
+        this.typeCard = typeCard
+        return this
+    }
+
     override fun getTitle() = title
 
     override fun getSubtitle() = subtitle
@@ -66,4 +80,7 @@ class CRYCardItemBuilder: CRYCardItemBI {
 
     override fun getHaveCollections() = haveCollections
 
+    override fun getOnClickCard() = onClickCard!!
+
+    override fun getTypeCard() = typeCard
 }

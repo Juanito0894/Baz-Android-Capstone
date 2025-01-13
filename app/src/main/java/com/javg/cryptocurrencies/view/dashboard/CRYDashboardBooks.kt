@@ -34,6 +34,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.javg.cryptocurrencies.R
 import com.javg.cryptocurrencies.data.enums.CRYEnumsTopBar
+import com.javg.cryptocurrencies.data.enums.CRYEnumsTypeCard
 import com.javg.cryptocurrencies.data.enums.CRYEnumsTypeFlow
 import com.javg.cryptocurrencies.data.model.CRYCardItemBuilder
 import com.javg.cryptocurrencies.data.model.CRYDataState
@@ -92,13 +93,16 @@ fun CRYDashboardBooksScreen(
                                     .withIconId(it.logoId)
                                     .withButtonAction(true)
                                     .withHaveCollections(it.conversions.size > 1)
+                                    .withTypeCard(CRYEnumsTypeCard.DASHBOARD)
                                     .withOnClick {
-                                        onClick(homeVM.getTypeView(it.conversions), it.acronym) })
+                                        onClick(homeVM.getTypeView(it.conversions), homeVM.getIdBook(it)) })
                         }
                     }
                 }
             }
-            is CRYDataState.Error -> CRYErrorScreen(title = stringResource(id = R.string.cry_internet_error_title), message = (response as CRYDataState.Error).message)
+            is CRYDataState.Error -> CRYErrorScreen(
+                title = stringResource(id = R.string.cry_internet_error_title),
+                message = (response as CRYDataState.Error).message){}
             else -> {}
         }
     }

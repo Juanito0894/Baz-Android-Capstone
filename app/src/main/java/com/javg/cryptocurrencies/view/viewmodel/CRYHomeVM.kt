@@ -72,4 +72,8 @@ class CRYHomeVM @Inject constructor(
 
     fun getTypeView(collections: List<CRYBookV2>) = if (collections.size > 1) CRYEnumsTypeFlow.COLLECTIONS else CRYEnumsTypeFlow.SINGLE
 
+    fun getIdBook(book: CRYGeneralBook): String{
+        return if (book.conversions.size > 1) book.acronym else "${book.acronym}|${book.conversions.first().idBook}"
+    }
+
 }

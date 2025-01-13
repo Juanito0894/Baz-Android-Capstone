@@ -24,6 +24,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.javg.cryptocurrencies.R
 import com.javg.cryptocurrencies.data.enums.CRYEnumsTopBar
+import com.javg.cryptocurrencies.data.enums.CRYEnumsTypeCard
 import com.javg.cryptocurrencies.data.model.CRYCardItemBuilder
 import com.javg.cryptocurrencies.data.model.CRYTopHeaderBuilder
 import com.javg.cryptocurrencies.view.components.CRYCardBookUI
@@ -35,7 +36,7 @@ import com.javg.cryptocurrencies.view.theme.myTypography
 import com.javg.cryptocurrencies.view.viewmodel.CRYCollectionsBooksVM
 
 @Composable
-fun CRYCollectionsBookScreen(acronym: String, onClickBack: () -> Unit){
+fun CRYCollectionsBookScreen(acronym: String, onClickBack: () -> Unit, onClickCard: (String) -> Unit){
     val collectionBooksVM: CRYCollectionsBooksVM = hiltViewModel()
     val book by collectionBooksVM.generalBook.observeAsState()
 
@@ -74,10 +75,14 @@ fun CRYCollectionsBookScreen(acronym: String, onClickBack: () -> Unit){
                     LazyColumn {
                         items(conversions){
                             CRYCardBookUI(CRYCardItemBuilder()
-                                .withTitle(it.acronym.toUpperCase())
+                                .withTitle(it.acronym.lowercase())
                                 .withTextMoney(it.maximumAmount)
                                 .withTextSubtitleMoney(it.rate)
-                                .withIconId(it.imageId))
+                                .withIconId(it.imageId)
+                                .withTypeCard(CRYEnumsTypeCard.COLLECTION)
+                                .withOnClickCard {
+                                    onClickCard("${it.acronym}|${it.idBook}")
+                                })
                         }
                     }
                 }

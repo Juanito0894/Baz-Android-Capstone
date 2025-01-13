@@ -1,8 +1,8 @@
 package com.javg.cryptocurrencies.view.components
 
-import android.widget.Space
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -15,6 +15,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Button
+import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Card
 import androidx.compose.material.IconButton
 import androidx.compose.material.Text
@@ -26,11 +28,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.javg.cryptocurrencies.R
 import com.javg.cryptocurrencies.data.enums.CRYEnumsTopBar
+import com.javg.cryptocurrencies.data.enums.CRYEnumsTypeCard
 import com.javg.cryptocurrencies.data.model.CRYCardInformationBookBuilder
 import com.javg.cryptocurrencies.data.model.CRYCardItemBuilder
 import com.javg.cryptocurrencies.data.model.CRYTopHeaderBuilder
@@ -87,67 +89,100 @@ fun CRYTopHeaderBarUI(topHeaderBuilder: CRYTopHeaderBuilder){
 
 @Composable
 fun CRYCardBookUI(cryCardItemBuilder: CRYCardItemBuilder){
-    Column {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(62.dp)
-                .background(Background1)
-                .padding(horizontal = 16.dp),
-            verticalAlignment = Alignment.CenterVertically) {
-
-            if (cryCardItemBuilder.getIconId() != 0) {
-                Image(
-                    painter = painterResource(id = cryCardItemBuilder.getIconId()),
-                    contentDescription = "",
+    when(cryCardItemBuilder.getTypeCard()){
+        CRYEnumsTypeCard.DASHBOARD -> {
+            Column {
+                Row(
                     modifier = Modifier
-                        .size(30.dp))
-            }
+                        .fillMaxWidth()
+                        .height(62.dp)
+                        .background(Background1)
+                        .padding(horizontal = 16.dp),
+                    verticalAlignment = Alignment.CenterVertically) {
 
-            Spacer(Modifier.width(20.dp))
-            Column(Modifier.weight(3f)) {
-                if (cryCardItemBuilder.getTitle().isNotEmpty()) {
-                    Text(text = cryCardItemBuilder.getTitle(),
-                        style = myTypography.h3,
-                        fontWeight = FontWeight.Medium,
-                        color = Text1)
-                }
+                    if (cryCardItemBuilder.getIconId() != 0) {
+                        Image(
+                            painter = painterResource(id = cryCardItemBuilder.getIconId()),
+                            contentDescription = "",
+                            modifier = Modifier
+                                .size(30.dp))
+                    }
 
-                if (cryCardItemBuilder.getSubtitle().isNotEmpty()) {
-                    Text(text = cryCardItemBuilder.getSubtitle().toUpperCase(),
-                        style = myTypography.subtitle1,
-                        color = Text2)
-                }
-            }
-            if (cryCardItemBuilder.getButtonAction()) {
-                TextButton(onClick = cryCardItemBuilder.getOnClick(),
-                    modifier = Modifier.align(Alignment.Bottom)) {
-                    Text(text = if (cryCardItemBuilder.getHaveCollections()) "Ver todos" else "Ver",
-                        style = myTypography.h4,
-                        color = Action)
-                }
-            }
-            Column(horizontalAlignment = Alignment.End) {
-                if (cryCardItemBuilder.getTextMoney().isNotEmpty()) {
-                    Text(text = cryCardItemBuilder.getTextMoney().formatMoney(),
-                        style = myTypography.h3,
-                        fontWeight = FontWeight.Medium,
-                        color = Text1)
-                }
+                    Spacer(Modifier.width(20.dp))
+                    Column(Modifier.weight(3f)) {
+                        Text(text = cryCardItemBuilder.getTitle(),
+                            style = myTypography.h3,
+                            fontWeight = FontWeight.Medium,
+                            color = Text1)
 
-                if (cryCardItemBuilder.getTextSubtitleMoney().isNotEmpty()) {
-                    Text(text = cryCardItemBuilder.getTextSubtitleMoney(),
-                        style = myTypography.body1,
-                        color = Success)
+                        Text(text = cryCardItemBuilder.getSubtitle().lowercase(),
+                            style = myTypography.subtitle1,
+                            color = Text2)
+                    }
+                    if (cryCardItemBuilder.getButtonAction()) {
+                        TextButton(onClick = cryCardItemBuilder.getOnClick(),
+                            modifier = Modifier.align(Alignment.Bottom)) {
+                            Text(text = if (cryCardItemBuilder.getHaveCollections()) "Ver todos" else "Ver",
+                                style = myTypography.h4,
+                                color = Action)
+                        }
+                    }
                 }
+                Spacer(
+                    Modifier
+                        .fillMaxWidth()
+                        .height(1.dp)
+                        .padding(horizontal = 8.dp)
+                        .background(Primary200))
             }
         }
-        Spacer(
-            Modifier
-                .fillMaxWidth()
-                .height(1.dp)
-                .padding(horizontal = 8.dp)
-                .background(Primary200))
+        CRYEnumsTypeCard.COLLECTION -> {
+            Column(modifier = Modifier
+                .clickable {
+                    cryCardItemBuilder.getOnClickCard().invoke()
+                }) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(62.dp)
+                        .background(Background1)
+                        .padding(horizontal = 16.dp),
+                    verticalAlignment = Alignment.CenterVertically) {
+
+                    if (cryCardItemBuilder.getIconId() != 0) {
+                        Image(
+                            painter = painterResource(id = cryCardItemBuilder.getIconId()),
+                            contentDescription = "",
+                            modifier = Modifier
+                                .size(30.dp))
+                    }
+
+                    Spacer(Modifier.width(20.dp))
+                    Column(Modifier.weight(3f)) {
+                        Text(text = cryCardItemBuilder.getTitle(),
+                            style = myTypography.h3,
+                            fontWeight = FontWeight.Medium,
+                            color = Text1)
+                    }
+                    Column(horizontalAlignment = Alignment.End) {
+                        Text(text = cryCardItemBuilder.getTextMoney().formatMoney(),
+                            style = myTypography.h3,
+                            fontWeight = FontWeight.Medium,
+                            color = Text1)
+
+                        Text(text = cryCardItemBuilder.getTextSubtitleMoney(),
+                            style = myTypography.body1,
+                            color = Success)
+                    }
+                }
+                Spacer(
+                    Modifier
+                        .fillMaxWidth()
+                        .height(1.dp)
+                        .padding(horizontal = 8.dp)
+                        .background(Primary200))
+            }
+        }
     }
 }
 
@@ -164,7 +199,7 @@ fun CRYContentBooksUI(content: @Composable () -> Unit){
 }
 
 @Composable
-fun CRYErrorScreen(title: String, message: String){
+fun CRYErrorScreen(title: String, message: String, onClickButton: () -> Unit){
     Column(
         Modifier
             .fillMaxSize()
@@ -188,16 +223,29 @@ fun CRYErrorScreen(title: String, message: String){
             textAlign = TextAlign.Center,
             color = Text2)
         Spacer(modifier = Modifier.weight(1f))
-
+        Button(onClick = {onClickButton()},
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 64.dp),
+            colors = ButtonDefaults
+                .buttonColors(
+                    backgroundColor = Primary500,
+                    contentColor = Color.White)) {
+            Text(text = "Salir")
+        }
+        Spacer(modifier = Modifier.weight(1f))
     }
 }
 
 @Composable
 fun CRYCardInformationBookUI(cryCardInformationBookBuilder: CRYCardInformationBookBuilder){
-    Row(Modifier.fillMaxWidth()
-        .padding(
-            horizontal = 16.dp,
-            vertical = 6.dp),
+    Row(
+        Modifier
+            .fillMaxWidth()
+            .padding(
+                horizontal = 16.dp,
+                vertical = 6.dp
+            ),
         horizontalArrangement = Arrangement.SpaceBetween) {
         Column {
             Text(text = "Precio",

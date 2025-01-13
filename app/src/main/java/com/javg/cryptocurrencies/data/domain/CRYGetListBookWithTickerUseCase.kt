@@ -1,6 +1,5 @@
 package com.javg.cryptocurrencies.data.domain
 
-import android.util.Log
 import com.javg.cryptocurrencies.data.model.CRYDataState
 import com.javg.cryptocurrencies.data.model.CRYDetailBook
 import com.javg.cryptocurrencies.data.repository.CRYOrderBookRepository

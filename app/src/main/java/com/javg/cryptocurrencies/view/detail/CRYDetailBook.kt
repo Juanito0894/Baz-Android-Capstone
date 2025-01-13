@@ -34,7 +34,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -66,17 +65,16 @@ import com.javg.cryptocurrencies.view.viewmodel.CRYDetailBookVM
 fun CRYDetailBookScreen(acronym: String, onClickBack: () -> Unit) {
     val detailVM: CRYDetailBookVM = hiltViewModel()
     val response by detailVM.responseDetailBook.collectAsState()
-    val generalBook by detailVM.generalBook.collectAsState()
+    val fullName by detailVM.fullName.collectAsState()
     val informationBooks by detailVM.listAskOrBids.collectAsState()
 
     LaunchedEffect(key1 = true) {
         Log.e("CRYDetailBookScreen","-------book -> $acronym")
-        detailVM.getTicker("btc_mxn")
-        detailVM.getInfoBook(acronym)
+        detailVM.getTicker(acronym.split("|").last())
+        detailVM.getInfoBook(acronym.split("|").first())
     }
-    val currentContext = LocalContext.current
     val topBarBuilder = CRYTopHeaderBuilder()
-        .withTitle(generalBook.fullName)
+        .withTitle(fullName)
         .withTypeHeader(CRYEnumsTopBar.NORMAL)
         .withOnClick { onClickBack() }
 
@@ -174,7 +172,11 @@ fun CRYDetailBookScreen(acronym: String, onClickBack: () -> Unit) {
                 }
             }
             is CRYDataState.Error -> {
-                CRYErrorScreen(title = stringResource(id = R.string.cry_internet_error_title), message = (response as CRYDataState.Error).message)
+                CRYErrorScreen(
+                    title = stringResource(id = R.string.cry_internet_error_title),
+                    message = (response as CRYDataState.Error).message){
+                    onClickBack()
+                }
             }
             else -> {}
         }

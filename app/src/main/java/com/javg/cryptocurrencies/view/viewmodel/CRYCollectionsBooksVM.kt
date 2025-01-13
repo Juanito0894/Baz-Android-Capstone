@@ -6,11 +6,8 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.javg.cryptocurrencies.data.domain.CRYFindBookUseCase
-import com.javg.cryptocurrencies.data.model.CRYBookV2
 import com.javg.cryptocurrencies.data.model.CRYGeneralBook
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 

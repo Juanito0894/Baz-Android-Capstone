@@ -35,7 +35,7 @@ fun String.formatMoney(): AnnotatedString {
 
 fun String.formatAmount(): String {
     val symbols = DecimalFormatSymbols(Locale.US)
-    val formatter = DecimalFormat("###,###,###", symbols)
+    val formatter = DecimalFormat("###,###,###.########", symbols)
     val convertAmount = formatter.format(this.toDouble())
     return String.format(Locale.US, "$%s", convertAmount)
 }

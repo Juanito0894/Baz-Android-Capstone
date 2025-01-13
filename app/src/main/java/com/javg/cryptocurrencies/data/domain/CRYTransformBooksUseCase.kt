@@ -18,12 +18,12 @@ class TransformBooksUseCase @Inject constructor() {
             unrepeatedBooks.forEach { unrepeatedBook ->
                 val bookGroup = booksResponse.filter { it.book.getFirstCoinsText() == unrepeatedBook.book.getFirstCoinsText() }
                 val mockBook = CRYMockData.bookDefaults.find { it.acronym == unrepeatedBook.book.getFirstCoinsText() } ?:
-                run { CRYDefaultBook(unrepeatedBook.book,unrepeatedBook.book.toUpperCase(), R.drawable.ic_default_book) }
+                run { CRYDefaultBook(unrepeatedBook.book,unrepeatedBook.book.uppercase(), R.drawable.ic_default_book) }
                 val newGroupBooks = mutableListOf<CRYBookV2>()
 
                 bookGroup.forEach { book ->
                     val mockBookUnrepeated = CRYMockData.bookDefaults.find { it.acronym == book.book.getSecondCoinsText() } ?:
-                    run { CRYDefaultBook(book.book.getSecondCoinsText(),book.book.getSecondCoinsText().toUpperCase(),
+                    run { CRYDefaultBook(book.book.getSecondCoinsText(),book.book.getSecondCoinsText().uppercase(),
                         R.drawable.ic_default_book) }
 
                     newGroupBooks.add(

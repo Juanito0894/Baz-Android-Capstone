@@ -14,3 +14,8 @@ enum class CRYEnumsTypeList{
     ASK,
     BIDS
 }
+
+enum class CRYEnumsTypeCard{
+    DASHBOARD,
+    COLLECTION
+}

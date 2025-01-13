@@ -6,6 +6,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.javg.cryptocurrencies.data.domain.CRYFindBookUseCase
+import com.javg.cryptocurrencies.data.domain.CRYFindNameBookUseCase
 import com.javg.cryptocurrencies.data.domain.CRYGetListBookWithTickerUseCase
 import com.javg.cryptocurrencies.data.enums.CRYEnumsTypeList
 import com.javg.cryptocurrencies.data.model.CRYAskOrBids
@@ -33,14 +34,14 @@ import javax.inject.Inject
 class CRYDetailBookVM @Inject constructor(
     application: Application,
     private val tickerUseCase: CRYGetListBookWithTickerUseCase,
-    private val findBookUseCase: CRYFindBookUseCase
+    private val getNameBookUseCase: CRYFindNameBookUseCase
 ) : AndroidViewModel(application) {
 
     private val _responseDetailBook = MutableStateFlow<CRYDataState<CRYDetailBook>>(CRYDataState.Idle)
     val responseDetailBook = _responseDetailBook.asStateFlow()
 
-    private val _generalBook = MutableStateFlow(CRYGeneralBook())
-    val generalBook = _generalBook.asStateFlow()
+    var fullName = MutableStateFlow<String>("")
+        private set
 
     private var _listAskOrBids = MutableStateFlow<List<CRYAskOrBids>>(emptyList())
     val listAskOrBids = _listAskOrBids.asStateFlow()
@@ -66,14 +67,7 @@ class CRYDetailBookVM @Inject constructor(
     }
 
     fun getInfoBook(acronym: String){
-        viewModelScope.launch {
-            val book = findBookUseCase(acronym)
-            if (book != null){
-                _generalBook.update {
-                    it.copy(fullName = book.fullName)
-                }
-            }
-        }
+        fullName.value = getNameBookUseCase(acronym)
     }
 
     fun updateInformationBooks(typeList: CRYEnumsTypeList) {

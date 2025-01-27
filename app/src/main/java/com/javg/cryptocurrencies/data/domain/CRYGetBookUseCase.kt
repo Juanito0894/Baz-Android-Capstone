@@ -3,8 +3,11 @@ package com.javg.cryptocurrencies.data.domain
 import com.javg.cryptocurrencies.data.model.CRYDataState
 import com.javg.cryptocurrencies.data.model.CRYGeneralBook
 import com.javg.cryptocurrencies.data.repository.CRYBookRepository
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
+import okhttp3.Dispatcher
 import javax.inject.Inject
 
 /**
@@ -21,7 +24,8 @@ import javax.inject.Inject
 class CRYGetBookUseCase @Inject constructor(
     private val repository: CRYBookRepository,
     private val cryTransformBooksUseCase: TransformBooksUseCase,
-    private val crySaveDataUseCase: CRYSaveDataUseCase
+    private val crySaveDataUseCase: CRYSaveDataUseCase,
+    private val dispatcher: CoroutineDispatcher
 ) {
     suspend operator fun invoke(): Flow<CRYDataState<List<CRYGeneralBook>>> = flow{
         repository.queryGeneralBooks().collect{
@@ -41,5 +45,5 @@ class CRYGetBookUseCase @Inject constructor(
                 }
             }
         }
-    }
+    }.flowOn(dispatcher)
 }

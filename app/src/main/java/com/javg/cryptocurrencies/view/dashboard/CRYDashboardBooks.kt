@@ -102,7 +102,10 @@ fun CRYDashboardBooksScreen(
             }
             is CRYDataState.Error -> CRYErrorScreen(
                 title = stringResource(id = R.string.cry_internet_error_title),
-                message = (response as CRYDataState.Error).message){}
+                nameBtn = "Volver a intentar",
+                message = (response as CRYDataState.Error).message){
+                homeVM.getBooks()
+            }
             else -> {}
         }
     }

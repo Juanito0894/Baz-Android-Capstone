@@ -174,8 +174,9 @@ fun CRYDetailBookScreen(acronym: String, onClickBack: () -> Unit) {
             is CRYDataState.Error -> {
                 CRYErrorScreen(
                     title = stringResource(id = R.string.cry_internet_error_title),
-                    message = (response as CRYDataState.Error).message){
-                    onClickBack()
+                    message = (response as CRYDataState.Error).message,
+                    nameBtn = "Reintentar"){
+                    detailVM.getTicker(acronym.split("|").last())
                 }
             }
             else -> {}

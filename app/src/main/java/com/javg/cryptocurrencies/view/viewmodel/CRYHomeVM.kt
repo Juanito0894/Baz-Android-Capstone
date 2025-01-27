@@ -9,9 +9,11 @@ import com.javg.cryptocurrencies.data.model.CRYBookV2
 import com.javg.cryptocurrencies.data.model.CRYDataState
 import com.javg.cryptocurrencies.data.model.CRYGeneralBook
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import okhttp3.Dispatcher
 import javax.inject.Inject
 
 /**
@@ -45,6 +47,7 @@ class CRYHomeVM @Inject constructor(
     fun getBooks() {
         /*val result = bookUseCase.getAvailableBooksRx()
         _result.postValue(result)*/
+        queryBookFlow()
     }
 
     /**

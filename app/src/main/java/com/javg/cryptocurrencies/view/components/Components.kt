@@ -199,7 +199,7 @@ fun CRYContentBooksUI(content: @Composable () -> Unit){
 }
 
 @Composable
-fun CRYErrorScreen(title: String, message: String, onClickButton: () -> Unit){
+fun CRYErrorScreen(title: String,nameBtn: String = "Salir", message: String, onClickButton: () -> Unit){
     Column(
         Modifier
             .fillMaxSize()
@@ -231,7 +231,7 @@ fun CRYErrorScreen(title: String, message: String, onClickButton: () -> Unit){
                 .buttonColors(
                     backgroundColor = Primary500,
                     contentColor = Color.White)) {
-            Text(text = "Salir")
+            Text(text = nameBtn)
         }
         Spacer(modifier = Modifier.weight(1f))
     }
